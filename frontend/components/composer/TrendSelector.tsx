@@ -1,8 +1,10 @@
 "use client"
 
 import { useState, useEffect } from "react"
+import { useRouter } from "next/navigation"
 import { Search, RefreshCw } from "lucide-react"
 import { fetchTrends } from "@/lib/api-client"
+import { useComposerStore } from "@/lib/stores/composer"
 import type { TrendTopic } from "@meme-alchemist/shared/types"
 
 interface TrendSelectorProps {
@@ -21,6 +23,7 @@ const TREND_IMAGES = [
 ]
 
 export function TrendSelector({ onNext, onBack }: TrendSelectorProps) {
+  const router = useRouter()
   const [trends, setTrends] = useState<TrendTopic[]>([])
   const [loading, setLoading] = useState(true)
   const [customTopic, setCustomTopic] = useState("")
@@ -52,13 +55,19 @@ export function TrendSelector({ onNext, onBack }: TrendSelectorProps) {
 
   function handleTrendClick(topic: string) {
     setSelectedTrend(topic)
-    setTimeout(() => onNext(topic), 150)
+    // Save topic to store and navigate to fact-picker
+    useComposerStore.setState({ topic })
+    setTimeout(() => {
+      router.push("/fact-picker")
+    }, 150)
   }
 
   function handleCustomSubmit(e: React.FormEvent) {
     e.preventDefault()
     if (customTopic.trim()) {
-      onNext(customTopic.trim())
+      // Save topic to store and navigate to fact-picker
+      useComposerStore.setState({ topic: customTopic.trim() })
+      router.push("/fact-picker")
     }
   }
 

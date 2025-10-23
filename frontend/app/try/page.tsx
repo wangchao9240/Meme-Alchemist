@@ -23,7 +23,7 @@ export default function TryPage() {
 
   const stepTitles = {
     topic: "Select a Trend",
-    facts: "Pick Facts",
+    facts: "Choose a Fact",
     template: "Choose Template",
     result: "Your Meme",
   }

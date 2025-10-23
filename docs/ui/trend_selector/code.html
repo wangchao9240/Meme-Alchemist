@@ -1,0 +1,163 @@
+<!DOCTYPE html>
+<html class="dark" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Meme Alchemist - Trend Selector</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;700;800&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" rel="stylesheet"/>
+<script id="tailwind-config">
+    tailwind.config = {
+      darkMode: "class",
+      theme: {
+        extend: {
+          colors: {
+            "primary": "#A855F7",
+            "background-dark": "#100E16",
+            "surface-dark": "#1C1825",
+            "on-surface-dark": "#E6E0E9",
+            "on-surface-variant-dark": "#CAC4D0",
+            "primary-container": "#422A63",
+            "on-primary-container": "#EADDFF",
+            "outline": "#938F99",
+            "outline-variant": "#49454F",
+          },
+          fontFamily: {
+            "display": ["Inter", "sans-serif"],
+          },
+          borderRadius: {
+            "DEFAULT": "0.25rem",
+            "lg": "0.75rem",
+            "xl": "1rem",
+            "full": "9999px"
+          },
+          animation: {
+            'shimmer': 'shimmer 1.5s infinite',
+            'pulse-strong': 'pulse 1s cubic-bezier(0.4, 0, 0.6, 1) infinite',
+          },
+          keyframes: {
+            shimmer: {
+              '0%, 100%': {
+                'background-color': 'rgba(120, 117, 128, 0.2)'
+              },
+              '50%': {
+                'background-color': 'rgba(120, 117, 128, 0.4)'
+              },
+            },
+          },
+        },
+      },
+    }
+  </script>
+<style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+    .material-symbols-outlined {
+      font-variation-settings:
+      'FILL' 1,
+      'wght' 400,
+      'GRAD' 0,
+      'opsz' 24
+    }
+  </style>
+<style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+  </head>
+<body class="bg-background-dark font-display text-on-surface-dark">
+<div class="relative flex h-auto min-h-screen w-full flex-col dark group/design-root overflow-x-hidden">
+<main class="flex-1 flex flex-col">
+<header class="flex items-center justify-between px-4 pt-4 pb-6 sticky top-0 bg-background-dark z-20">
+<button aria-label="Back" class="flex size-10 items-center justify-center">
+<span class="material-symbols-outlined text-on-surface-dark">arrow_back</span>
+</button>
+<h1 class="text-xl font-bold leading-tight text-on-surface-dark">Select a Trend</h1>
+<button aria-label="Refresh trends" class="flex size-10 items-center justify-center">
+<span class="material-symbols-outlined text-on-surface-dark">refresh</span>
+</button>
+</header>
+<div class="px-4 pb-6">
+<label class="block text-sm font-medium text-on-surface-variant-dark mb-2" for="custom-topic">Have a topic in mind?</label>
+<div class="relative">
+<input class="form-input w-full bg-surface-dark border-outline-variant rounded-lg h-14 pl-12 pr-4 text-on-surface-dark placeholder:text-on-surface-variant-dark focus:ring-2 focus:ring-primary focus:border-primary transition-shadow" id="custom-topic" name="custom-topic" placeholder="e.g., 'Cats in space'" type="text"/>
+<span class="material-symbols-outlined absolute left-4 top-1/2 -translate-y-1/2 text-on-surface-variant-dark pointer-events-none">search</span>
+</div>
+</div>
+<div class="grid grid-cols-[repeat(auto-fill,minmax(150px,1fr))] gap-4 px-4 pb-24 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5">
+<div class="group/card relative aspect-[3/4] rounded-xl overflow-hidden cursor-pointer focus-within:ring-4 focus-within:ring-primary/80 transition-all duration-300" tabindex="0">
+<div class="absolute inset-0 bg-cover bg-center transition-transform duration-300 group-hover/card:scale-105" style='background-image: linear-gradient(180deg, rgba(0, 0, 0, 0) 40%, rgba(0, 0, 0, 0.8) 100%), url("https://lh3.googleusercontent.com/aida-public/AB6AXuDOtk9BLENssK8NjX5T04L2l6laousqG5GmOAOtqKehGZyPYumhEQwrr63Yzs7rxb_DIkyKLtdha6zN2qoO-U5rDJEBY-G2JYazhq2LwLMKS8lbZqze8oxSvnUaXX00swnjFNY6CILQBDSDBVjuy_WpY5hzdxdpcfwC3tQf49p0nmY4euUHH2zs29zXpKY4FDScS6fihi0jbiM21qUcOzRM2G21oW01Qhbmra6TUSFd_F_21wwCAyUgwwOM3DPyameBjv4iKYzUbIA");'></div>
+<div class="absolute inset-0 bg-primary opacity-0 group-hover/card:opacity-20 group-focus-within/card:opacity-20 transition-opacity duration-300"></div>
+<div class="absolute bottom-0 left-0 right-0 p-3">
+<p class="text-on-primary-container text-base font-bold leading-tight line-clamp-2">Crying Cat</p>
+</div>
+<div class="absolute inset-0 ring-4 ring-primary opacity-0 group-active/card:opacity-100 transition-opacity duration-300 rounded-xl"></div>
+</div>
+<div class="group/card relative aspect-[3/4] rounded-xl overflow-hidden cursor-pointer ring-4 ring-primary" tabindex="0">
+<div class="absolute inset-0 bg-cover bg-center scale-105" style='background-image: linear-gradient(180deg, rgba(0, 0, 0, 0) 40%, rgba(0, 0, 0, 0.8) 100%), url("https://lh3.googleusercontent.com/aida-public/AB6AXuAjpSOkGynpBwCNsdOzSCplJxugBCMTiQ6PGqatnV9cSrU6NT55Cv_j7PEEBcEixbi0N3FSO2ytxIrrcw8WzP_DCp5NbKTD_9sS2sOZYPHREBMY2bX9y3DwKmF9XxRrYHl4NZ8XXgBC4vnuFeVPsRSpQCbvp520EkpFqfuiNMs-iD2P2DZ-P3zIBKN5a2pL-fv_hZ-KV7jhYjJMC34hQz_WVdE7JK7WxqRpAqb7ZmazLL4toyjf6ZgmdtsZJJUIxeuZSx3fTHfLF8s");'></div>
+<div class="absolute inset-0 bg-primary opacity-20"></div>
+<div class="absolute bottom-0 left-0 right-0 p-3">
+<p class="text-on-primary-container text-base font-bold leading-tight line-clamp-2">Distracted Boyfriend</p>
+</div>
+</div>
+<div class="group/card relative aspect-[3/4] rounded-xl overflow-hidden cursor-pointer focus-within:ring-4 focus-within:ring-primary/80 transition-all duration-300" tabindex="0">
+<div class="absolute inset-0 bg-cover bg-center transition-transform duration-300 group-hover/card:scale-105" style='background-image: linear-gradient(180deg, rgba(0, 0, 0, 0) 40%, rgba(0, 0, 0, 0.8) 100%), url("https://lh3.googleusercontent.com/aida-public/AB6AXuBsdCgODryIGjLY2qwlvp_tDUPCJdPY6n42vrB6OnRO1mJNf4ZBKFJSPyfJCKGShWkrWcyZoVWDbLL8cqTTfv3tHlyuLquOZCNheKx3Y5dlS44r7kPRLz2Wvtj1r73rMLoPWMQoCNQluDVxufvqmLya43HRZAYCe1P2Md0B2-GsXYU2jddcL0XHPDG942fgSYlUXub_X_cfgJ0gKvuSbmjfC3CsN5gXIAtiPP4IYhvg2h9gPCqM4bXK3iE-7KwdNBo3aRJLWsYA2Sw");'></div>
+<div class="absolute inset-0 bg-primary opacity-0 group-hover/card:opacity-20 group-focus-within/card:opacity-20 transition-opacity duration-300"></div>
+<div class="absolute bottom-0 left-0 right-0 p-3">
+<p class="text-on-primary-container text-base font-bold leading-tight line-clamp-2">This is Fine Dog</p>
+</div>
+<div class="absolute inset-0 ring-4 ring-primary opacity-0 group-active/card:opacity-100 transition-opacity duration-300 rounded-xl"></div>
+</div>
+<div class="group/card relative aspect-[3/4] rounded-xl overflow-hidden cursor-pointer focus-within:ring-4 focus-within:ring-primary/80 transition-all duration-300" tabindex="0">
+<div class="absolute inset-0 bg-cover bg-center transition-transform duration-300 group-hover/card:scale-105" style='background-image: linear-gradient(180deg, rgba(0, 0, 0, 0) 40%, rgba(0, 0, 0, 0.8) 100%), url("https://lh3.googleusercontent.com/aida-public/AB6AXuCJfg0s7DVA0e2TdHK0jkSME1UcMlSaYTmF3W0Hfpq6Rdq5Z2-2or6CGa03gNP-dpklLSWr-fRy1CO8-v6t9IktfJt3khNvXWFOD_pXQVrP-8FanaSxeG6powQpfhgAOHAzBbXlYynNKFhh5ZaK0U13upozgv6QNI7b2iirNrTj8Bo144tMoYFvmGnuiBGN6YSM1f4Mw38LoSadUlavKroHPUUPiSMHpI7SWLdkZ41o-yrFLqbcP6KEhktWnZJK4528gfIX0MG3X7E");'></div>
+<div class="absolute inset-0 bg-primary opacity-0 group-hover/card:opacity-20 group-focus-within/card:opacity-20 transition-opacity duration-300"></div>
+<div class="absolute bottom-0 left-0 right-0 p-3">
+<p class="text-on-primary-container text-base font-bold leading-tight line-clamp-2">Woman Yelling at Cat</p>
+</div>
+<div class="absolute inset-0 ring-4 ring-primary opacity-0 group-active/card:opacity-100 transition-opacity duration-300 rounded-xl"></div>
+</div>
+<div class="group/card relative aspect-[3/4] rounded-xl overflow-hidden cursor-pointer focus-within:ring-4 focus-within:ring-primary/80 transition-all duration-300" tabindex="0">
+<div class="absolute inset-0 bg-cover bg-center transition-transform duration-300 group-hover/card:scale-105" style='background-image: linear-gradient(180deg, rgba(0, 0, 0, 0) 40%, rgba(0, 0, 0, 0.8) 100%), url("https://lh3.googleusercontent.com/aida-public/AB6AXuD4IoM4o9tKOdFiJjISu8x5Jnd_EdfTbBH__AkcyewmAHE3yreAWfben7GfyLXi7cCZSNsniJHaO77l099IOmPfXs7aAkXUwGWsr97R4fkk0qbY9zvvWz_HqYFQ5tzRYDLHvkluYAaxCKZzyFLTsL1XSLRiWB4nDNRy85vNjRd1ZENbbaMbbau8x8Gr0ON9v3aH9nOuQrE2NgY2oLOi8efcxORP3gY-Jacezl3J5zVJ-q0TYbUPWjf1hiyVYkrs59R9xLOT0EiZgOY");'></div>
+<div class="absolute inset-0 bg-primary opacity-0 group-hover/card:opacity-20 group-focus-within/card:opacity-20 transition-opacity duration-300"></div>
+<div class="absolute bottom-0 left-0 right-0 p-3">
+<p class="text-on-primary-container text-base font-bold leading-tight line-clamp-2">Two Buttons</p>
+</div>
+<div class="absolute inset-0 ring-4 ring-primary opacity-0 group-active/card:opacity-100 transition-opacity duration-300 rounded-xl"></div>
+</div>
+<div class="group/card relative aspect-[3/4] rounded-xl overflow-hidden cursor-pointer focus-within:ring-4 focus-within:ring-primary/80 transition-all duration-300" tabindex="0">
+<div class="absolute inset-0 bg-cover bg-center transition-transform duration-300 group-hover/card:scale-105" style='background-image: linear-gradient(180deg, rgba(0, 0, 0, 0) 40%, rgba(0, 0, 0, 0.8) 100%), url("https://lh3.googleusercontent.com/aida-public/AB6AXuBawU_kVirXe0Tuhn3iWfBrJ0XU4sKN8SzJkNb52cVwng0PUtFMCcn_g_5AvmAHnXl5neJhZ3LQPFSUo-R4OAEoPXy_Zd4CGd4xBIOEXWTT3Bdvfni5959p_m25CgWAGzHXxc_K2QRE_NdEVYg_7zUXPeopJ_hiAaz9_B0Pz-cR2YlgujCbkeLrjtpzXNP0GRHLiC6pz5NC-IOZ52mh0cdyTsZPBei7_YKtlxRgsb5H_VOS7hmelZJX2Y12fOOmVcszVylCwribU7g");'></div>
+<div class="absolute inset-0 bg-primary opacity-0 group-hover/card:opacity-20 group-focus-within/card:opacity-20 transition-opacity duration-300"></div>
+<div class="absolute bottom-0 left-0 right-0 p-3">
+<p class="text-on-primary-container text-base font-bold leading-tight line-clamp-2">Expanding Brain</p>
+</div>
+<div class="absolute inset-0 ring-4 ring-primary opacity-0 group-active/card:opacity-100 transition-opacity duration-300 rounded-xl"></div>
+</div>
+</div>
+</main>
+<footer class="fixed bottom-0 left-0 right-0 bg-surface-dark/80 backdrop-blur-sm border-t border-outline-variant z-10">
+<nav class="flex justify-around items-center h-20">
+<a aria-label="Home" class="flex flex-col items-center gap-1 text-on-surface-variant-dark" href="#">
+<span class="material-symbols-outlined">home</span>
+<span class="text-xs font-medium">Home</span>
+</a>
+<a aria-current="page" aria-label="Trending" class="flex flex-col items-center gap-1 text-primary" href="#">
+<div class="bg-primary-container rounded-full px-7 py-1.5 mb-1">
+<span class="material-symbols-outlined text-on-primary-container">trending_up</span>
+</div>
+<span class="text-xs font-bold text-primary">Trending</span>
+</a>
+<a aria-label="Create" class="flex flex-col items-center gap-1 text-on-surface-variant-dark" href="#">
+<span class="material-symbols-outlined">add_circle</span>
+<span class="text-xs font-medium">Create</span>
+</a>
+<a aria-label="Profile" class="flex flex-col items-center gap-1 text-on-surface-variant-dark" href="#">
+<span class="material-symbols-outlined">person</span>
+<span class="text-xs font-medium">Profile</span>
+</a>
+</nav>
+</footer>
+</div>
+
+</body></html>

@@ -1,0 +1,36 @@
+name = "meme-alchemist-api"
+main = "src/index.ts"
+compatibility_date = "2025-01-10"
+compatibility_flags = ["nodejs_compat"]
+
+# KV Namespaces
+# 本地开发时使用内存 KV (自动)
+# 生产环境部署前需要创建真实的 KV namespace：wrangler kv:namespace create CACHE
+# [[kv_namespaces]]
+# binding = "CACHE"
+# id = "your-production-kv-id"
+# preview_id = "your-preview-kv-id"
+
+# Cron Triggers
+[triggers]
+crons = ["0 23 * * *"]  # Daily at 23:00 UTC (09:00 AEST)
+
+# Environment Variables (public)
+[vars]
+ENVIRONMENT = "production"
+
+# Secrets (set via: wrangler secret put SECRET_NAME)
+# - SUPABASE_URL
+# - SUPABASE_SERVICE_KEY
+# - OPENAI_API_KEY
+# - ADMIN_KEY
+# - WHITE_LISTED_DOMAINS
+
+# Build configuration
+[build]
+command = "npm run build"
+
+# Development
+[dev]
+port = 8787
+

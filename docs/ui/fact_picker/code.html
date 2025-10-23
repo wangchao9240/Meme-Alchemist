@@ -1,0 +1,160 @@
+<!DOCTYPE html>
+
+<html class="dark" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Meme Alchemist - Fact Picker</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined" rel="stylesheet"/>
+<script>
+    tailwind.config = {
+      darkMode: "class",
+      theme: {
+        extend: {
+          colors: {
+            "primary": "#8A2BE2",
+            "background-light": "#f7f6f8",
+            "background-dark": "#121212",
+          },
+          fontFamily: {
+            "display": ["Inter", "sans-serif"]
+          },
+          borderRadius: {
+            "DEFAULT": "0.25rem",
+            "lg": "0.5rem",
+            "xl": "0.75rem",
+            "full": "9999px"
+          },
+        },
+      },
+    }
+  </script>
+<style>
+    .material-symbols-outlined {
+      font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+    }
+  </style>
+<style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+  </head>
+<body class="bg-background-light dark:bg-background-dark font-display">
+<div class="relative flex h-auto min-h-screen w-full flex-col">
+<!-- Top App Bar -->
+<div class="flex items-center bg-background-light dark:bg-background-dark p-4 pb-2 justify-between sticky top-0 z-10 border-b border-gray-800">
+<div class="text-white flex size-12 shrink-0 items-center">
+<span class="material-symbols-outlined">arrow_back</span>
+</div>
+<h2 class="text-white text-lg font-bold leading-tight tracking-[-0.015em] flex-1 text-center">Choose a Fact</h2>
+<div class="w-12"></div>
+</div>
+<!-- Search Bar -->
+<div class="px-4 py-3 sticky top-[72px] z-10 bg-background-light dark:bg-background-dark">
+<label class="flex flex-col min-w-40 h-12 w-full">
+<div class="flex w-full flex-1 items-stretch rounded-lg h-full">
+<div class="text-gray-400 flex border-none bg-gray-800 items-center justify-center pl-4 rounded-l-lg border-r-0">
+<span class="material-symbols-outlined">search</span>
+</div>
+<input class="form-input flex w-full min-w-0 flex-1 resize-none overflow-hidden rounded-lg text-white focus:outline-0 focus:ring-0 border-none bg-gray-800 focus:border-none h-full placeholder:text-gray-400 px-4 rounded-l-none border-l-0 pl-2 text-base font-normal leading-normal" placeholder="Search for a fact..." value=""/>
+<div class="text-gray-400 flex border-none bg-gray-800 items-center justify-center pr-4 rounded-r-lg border-l-0">
+<span class="material-symbols-outlined">close</span>
+</div>
+</div>
+</label>
+</div>
+<!-- Chips -->
+<div class="flex gap-3 p-4 overflow-x-auto no-scrollbar">
+<div class="flex h-8 shrink-0 items-center justify-center gap-x-2 rounded-full bg-primary pl-4 pr-4"><p class="text-white text-sm font-medium leading-normal">All</p></div>
+<div class="flex h-8 shrink-0 items-center justify-center gap-x-2 rounded-full bg-gray-800 pl-4 pr-4">
+<p class="text-white text-sm font-medium leading-normal">Weird but True</p>
+</div>
+<div class="flex h-8 shrink-0 items-center justify-center gap-x-2 rounded-full bg-gray-800 pl-4 pr-4">
+<p class="text-white text-sm font-medium leading-normal">Historical Tidbits</p>
+</div>
+<div class="flex h-8 shrink-0 items-center justify-center gap-x-2 rounded-full bg-gray-800 pl-4 pr-4">
+<p class="text-white text-sm font-medium leading-normal">Science Facts</p>
+</div>
+<div class="flex h-8 shrink-0 items-center justify-center gap-x-2 rounded-full bg-gray-800 pl-4 pr-4">
+<p class="text-white text-sm font-medium leading-normal">Random Trivia</p>
+</div>
+<div class="flex h-8 shrink-0 items-center justify-center gap-x-2 rounded-full bg-gray-800 pl-4 pr-4">
+<p class="text-white text-sm font-medium leading-normal">Animal Kingdom</p>
+</div>
+<div class="flex h-8 shrink-0 items-center justify-center gap-x-2 rounded-full bg-gray-800 pl-4 pr-4">
+<p class="text-white text-sm font-medium leading-normal">Pop Culture</p>
+</div>
+</div>
+<!-- Fact List -->
+<div class="flex flex-col gap-2 px-4 pb-24">
+<div class="flex items-center gap-4 bg-gray-800 p-4 rounded-lg border-2 border-transparent hover:border-primary transition-all duration-300">
+<div class="flex-1">
+<p class="text-white text-base font-normal leading-normal">A group of flamingos is called a 'flamboyance'.</p>
+</div>
+<div class="shrink-0">
+<div class="flex size-7 items-center justify-center">
+<input class="h-5 w-5 rounded border-gray-600 border-2 bg-transparent text-primary checked:bg-primary checked:border-primary focus:ring-0 focus:ring-offset-0 focus:border-gray-600 focus:outline-none" type="checkbox"/>
+</div>
+</div>
+</div>
+<div class="flex items-center gap-4 bg-gray-800 p-4 rounded-lg border-2 border-primary transition-all duration-300">
+<div class="flex-1">
+<p class="text-white text-base font-normal leading-normal">Bananas are berries, but strawberries aren't.</p>
+</div>
+<div class="shrink-0">
+<div class="flex size-7 items-center justify-center">
+<input checked="" class="h-5 w-5 rounded border-gray-600 border-2 bg-transparent text-primary checked:bg-primary checked:border-primary focus:ring-0 focus:ring-offset-0 focus:border-gray-600 focus:outline-none" type="checkbox"/>
+</div>
+</div>
+</div>
+<div class="flex items-center gap-4 bg-gray-800 p-4 rounded-lg border-2 border-transparent hover:border-primary transition-all duration-300">
+<div class="flex-1">
+<p class="text-white text-base font-normal leading-normal">The inventor of the Pringles can is now buried in one.</p>
+</div>
+<div class="shrink-0">
+<div class="flex size-7 items-center justify-center">
+<input class="h-5 w-5 rounded border-gray-600 border-2 bg-transparent text-primary checked:bg-primary checked:border-primary focus:ring-0 focus:ring-offset-0 focus:border-gray-600 focus:outline-none" type="checkbox"/>
+</div>
+</div>
+</div>
+<div class="flex items-center gap-4 bg-gray-800 p-4 rounded-lg border-2 border-transparent hover:border-primary transition-all duration-300">
+<div class="flex-1">
+<p class="text-white text-base font-normal leading-normal">Honey never spoils.</p>
+</div>
+<div class="shrink-0">
+<div class="flex size-7 items-center justify-center">
+<input class="h-5 w-5 rounded border-gray-600 border-2 bg-transparent text-primary checked:bg-primary checked:border-primary focus:ring-0 focus:ring-offset-0 focus:border-gray-600 focus:outline-none" type="checkbox"/>
+</div>
+</div>
+</div>
+<div class="flex items-center gap-4 bg-gray-800 p-4 rounded-lg border-2 border-transparent hover:border-primary transition-all duration-300">
+<div class="flex-1">
+<p class="text-white text-base font-normal leading-normal">A shrimp's heart is in its head.</p>
+</div>
+<div class="shrink-0">
+<div class="flex size-7 items-center justify-center">
+<input class="h-5 w-5 rounded border-gray-600 border-2 bg-transparent text-primary checked:bg-primary checked:border-primary focus:ring-0 focus:ring-offset-0 focus:border-gray-600 focus:outline-none" type="checkbox"/>
+</div>
+</div>
+</div>
+<div class="flex items-center gap-4 bg-gray-800 p-4 rounded-lg border-2 border-transparent hover:border-primary transition-all duration-300">
+<div class="flex-1">
+<p class="text-white text-base font-normal leading-normal">It is impossible for most people to lick their own elbow.</p>
+</div>
+<div class="shrink-0">
+<div class="flex size-7 items-center justify-center">
+<input class="h-5 w-5 rounded border-gray-600 border-2 bg-transparent text-primary checked:bg-primary checked:border-primary focus:ring-0 focus:ring-offset-0 focus:border-gray-600 focus:outline-none" type="checkbox"/>
+</div>
+</div>
+</div>
+</div>
+<!-- Add to Meme Button -->
+<div class="fixed bottom-0 left-0 right-0 p-4 bg-background-dark/80 backdrop-blur-sm border-t border-gray-800">
+<button class="w-full h-12 bg-primary text-white font-bold rounded-lg flex items-center justify-center text-lg">
+            Add to Meme
+        </button>
+</div>
+</div>
+</body></html>

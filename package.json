@@ -1,0 +1,25 @@
+{
+  "name": "meme-alchemist",
+  "version": "0.1.0",
+  "private": true,
+  "description": "AI-powered meme generator with trending topics",
+  "scripts": {
+    "dev": "pnpm --parallel dev",
+    "dev:web": "pnpm --filter @meme-alchemist/web dev",
+    "dev:api": "pnpm --filter @meme-alchemist/api dev",
+    "build": "pnpm --filter @meme-alchemist/web build",
+    "build:api": "pnpm --filter @meme-alchemist/api build",
+    "deploy": "bash scripts/deploy.sh",
+    "deploy:web": "pnpm --filter @meme-alchemist/web deploy",
+    "deploy:api": "pnpm --filter @meme-alchemist/api deploy",
+    "db:migrate": "pnpm --filter @meme-alchemist/db migrate",
+    "db:seed": "pnpm --filter @meme-alchemist/db seed",
+    "typecheck": "pnpm --recursive typecheck",
+    "lint": "pnpm --recursive lint"
+  },
+  "engines": {
+    "node": ">=18.0.0",
+    "pnpm": ">=9.0.0"
+  },
+  "packageManager": "pnpm@9.0.0"
+}

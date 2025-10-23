@@ -1,0 +1,29 @@
+{
+  "name": "@meme-alchemist/api",
+  "version": "0.1.0",
+  "private": true,
+  "scripts": {
+    "dev": "wrangler dev",
+    "build": "tsc",
+    "deploy": "wrangler deploy",
+    "typecheck": "tsc --noEmit",
+    "cf-typegen": "wrangler types"
+  },
+  "dependencies": {
+    "@hono/zod-validator": "^0.4.1",
+    "@resvg/resvg-wasm": "^2.6.2",
+    "@supabase/supabase-js": "^2.74.0",
+    "hono": "^4.6.15",
+    "openai": "^6.2.0",
+    "satori": "^0.18.3",
+    "sharp": "^0.34.4",
+    "zod": "^3.24.1"
+  },
+  "devDependencies": {
+    "@cloudflare/workers-types": "^4.20250110.0",
+    "@meme-alchemist/shared": "workspace:*",
+    "@types/node": "^22.10.5",
+    "typescript": "^5.7.2",
+    "wrangler": "^3.103.0"
+  }
+}

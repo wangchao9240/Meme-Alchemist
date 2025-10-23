@@ -1,0 +1,48 @@
+# Dependencies
+node_modules/
+.pnp
+.pnp.js
+
+# Production builds
+/frontend/out
+/frontend/.next
+/backend/dist
+
+# Environment variables
+.env
+.env.local
+.env.*.local
+.dev.vars
+
+# Logs
+*.log
+npm-debug.log*
+pnpm-debug.log*
+
+# OS
+.DS_Store
+Thumbs.db
+
+# IDE
+.vscode/*
+!.vscode/settings.json
+!.vscode/extensions.json
+.idea/
+*.swp
+*.swo
+*~
+
+# Testing
+coverage/
+
+# Wrangler
+.wrangler/
+.mf/
+worker-configuration.d.ts
+
+# Supabase
+supabase/.temp
+
+# Misc
+*.tsbuildinfo
+

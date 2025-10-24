@@ -1,8 +1,10 @@
 "use client"
 
 import { useEffect, useMemo, useState } from "react"
-import { ArrowLeft, Loader2, Search, X } from "lucide-react"
+import { ArrowLeft, Search, X } from "lucide-react"
 import { fetchFacts } from "@/lib/api-client"
+import { FactCardSkeleton } from "@/components/ui/Skeleton"
+import { useToastStore } from "@/lib/stores/toast"
 import type { FactCandidate } from "@meme-alchemist/shared/types"
 
 const CATEGORIES = [
@@ -97,14 +99,65 @@ export function FactPicker({ topic, onNext, onBack }: FactPickerProps) {
   async function loadFacts() {
     setLoading(true)
     try {
-      const data = await fetchFacts({ topic, collections: [], limit: 12 })
+      // Infer collections from topic
+      const collections = inferCollections(topic)
+      console.log(
+        `[FactPicker] Loading facts for topic="${topic}", collections=[${collections.join(
+          ", "
+        )}]`
+      )
+
+      const data = await fetchFacts({ topic, collections, limit: 12 })
       setCandidates(data.candidates)
     } catch (error) {
       console.error("Failed to load facts:", error)
+      useToastStore
+        .getState()
+        .showToast("Failed to load facts, using fallback", "warning")
       setCandidates(FALLBACK_FACTS)
     } finally {
       setLoading(false)
     }
+  }
+
+  // Infer collections from topic keywords
+  function inferCollections(topic: string): string[] {
+    const lowerTopic = topic.toLowerCase()
+    const collections: string[] = []
+
+    // Keyword mapping to collections
+    const keywordMap: Record<string, string> = {
+      ai: "AI",
+      gpt: "AI",
+      llm: "AI",
+      chatgpt: "AI",
+      "machine learning": "AI",
+      tech: "Tech",
+      technology: "Tech",
+      software: "Tech",
+      programming: "Tech",
+      brisbane: "Brisbane",
+      queensland: "Brisbane",
+      australia: "Brisbane",
+      health: "Health",
+      fitness: "Health",
+      medical: "Health",
+      diet: "Health",
+    }
+
+    // Check for matches
+    for (const [keyword, collection] of Object.entries(keywordMap)) {
+      if (lowerTopic.includes(keyword) && !collections.includes(collection)) {
+        collections.push(collection)
+      }
+    }
+
+    // If no match, use generic "Tech" collection as fallback
+    if (collections.length === 0) {
+      collections.push("Tech")
+    }
+
+    return collections
   }
 
   function toggleFact(id: string) {
@@ -121,9 +174,19 @@ export function FactPicker({ topic, onNext, onBack }: FactPickerProps) {
 
   function handleNext() {
     const selectedFacts = candidates.filter((fact) => selected.has(fact.id))
-    if (selectedFacts.length > 0) {
-      onNext(selectedFacts)
+    if (selectedFacts.length === 0) {
+      useToastStore
+        .getState()
+        .showToast("Please select at least one fact", "warning")
+      return
     }
+    if (selectedFacts.length > 4) {
+      useToastStore
+        .getState()
+        .showToast("You can select up to 4 facts only", "warning")
+      return
+    }
+    onNext(selectedFacts)
   }
 
   function handleClearSearch() {
@@ -217,12 +280,10 @@ export function FactPicker({ topic, onNext, onBack }: FactPickerProps) {
       {/* Fact List */}
       <div className="flex flex-col gap-2 px-4 pb-24">
         {loading ? (
-          <div className="flex items-center justify-center py-12">
-            <Loader2
-              className="animate-spin"
-              size={32}
-              style={{ color: "#8A2BE2" }}
-            />
+          <div className="flex flex-col gap-2">
+            {Array.from({ length: 5 }).map((_, i) => (
+              <FactCardSkeleton key={i} />
+            ))}
           </div>
         ) : filteredFacts.length === 0 ? (
           <div className="py-16 text-center" style={{ color: "#9ca3af" }}>

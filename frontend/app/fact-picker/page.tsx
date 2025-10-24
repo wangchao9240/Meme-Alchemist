@@ -12,8 +12,8 @@ export default function FactPickerPage() {
   function handleNext(facts: FactCandidate[]) {
     // Save selected facts to store
     useComposerStore.setState({ facts })
-    // Navigate to meme viewer
-    router.push("/meme-viewer")
+    // Navigate to template picker
+    router.push("/template-picker")
   }
 
   function handleBack() {

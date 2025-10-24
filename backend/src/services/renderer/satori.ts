@@ -9,9 +9,22 @@ export class SatoriRenderer {
   async initialize() {
     // Initialize Resvg WASM once
     if (!wasmInitialized) {
-      await initWasm(fetch("https://unpkg.com/@resvg/resvg-wasm/index_bg.wasm"))
-      wasmInitialized = true
-      console.log("[Satori] Resvg WASM initialized")
+      try {
+        // Fetch WASM binary and initialize
+        const wasmResponse = await fetch(
+          "https://unpkg.com/@resvg/resvg-wasm/index_bg.wasm"
+        )
+        const wasmBuffer = await wasmResponse.arrayBuffer()
+        await initWasm(wasmBuffer)
+        wasmInitialized = true
+        console.log("[Satori] Resvg WASM initialized successfully")
+      } catch (error: any) {
+        console.error("[Satori] WASM initialization failed:", error.message)
+        console.error("[Satori] Error stack:", error.stack)
+        // WASM is not supported in local dev mode
+        // In production (deployed to Cloudflare), this will work
+        throw new Error("WASM not supported: " + error.message)
+      }
     }
 
     if (!fontCache) {

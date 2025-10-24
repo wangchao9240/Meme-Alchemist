@@ -3,6 +3,9 @@
 import { useState, useEffect } from "react"
 import { useRouter } from "next/navigation"
 import { ArrowLeft, Download, Sparkles, CloudOff, Loader2 } from "lucide-react"
+import { useComposerStore } from "@/lib/stores/composer"
+import { composeAndRender } from "@/lib/api-client"
+import { useToastStore } from "@/lib/stores/toast"
 
 type ViewerState = "loading" | "loaded" | "error"
 
@@ -10,27 +13,78 @@ export default function MemeViewerPage() {
   const router = useRouter()
   const [state, setState] = useState<ViewerState>("loading")
   const [memeUrl, setMemeUrl] = useState("")
+  const [errorMessage, setErrorMessage] = useState("")
+
+  // Get data from store
+  const topic = useComposerStore((state) => state.topic)
+  const facts = useComposerStore((state) => state.facts)
+  const template = useComposerStore((state) => state.template)
 
   useEffect(() => {
-    // Simulate loading
-    const timer = setTimeout(() => {
-      // For demo, randomly show loaded or error state
-      const shouldSucceed = Math.random() > 0.3
-      if (shouldSucceed) {
-        setState("loaded")
-        setMemeUrl(
-          "https://lh3.googleusercontent.com/aida-public/AB6AXuB6ynCvJ0a1Ar4I2gDmZpHSq46aj7Fi1h9WF71VnCbEAcc5K6B72HwXtK8nBU_e2WVEZ6-_xPgqk7hEBps17NXXoA4SkVxuo5o8pB3IZ0OwPDlhDAiOGcXHttWi7_mn-k_oZRA0PhLyGQKn5KTwQvAQc0ltITw8Y3Rb2Vpv7GTDS379y8y4GULCKVAV0kLTMxfXQPTCRHol9NJv_erm-S9PWxcA1WwP2-bgsxqdy2vqdao3AKejHQrvdSiQJNYtFvqIbElYL5TtBHY"
+    // Validate required data
+    if (!topic || !facts || facts.length === 0 || !template) {
+      console.error("[MemeViewer] Missing required data:", {
+        topic,
+        factsCount: facts?.length,
+        template,
+      })
+      useToastStore
+        .getState()
+        .showToast(
+          "Missing topic, facts or template. Please go back and select them.",
+          "error"
         )
-      } else {
-        setState("error")
-        setMemeUrl(
-          "https://lh3.googleusercontent.com/aida-public/AB6AXuD0vUJjH2tNyCJmZk3_MP7pJvULNPRrVjY37lRSL0R5zXatXRs7Xu5purK7bwJp6qqoRMeDGAsjohDrTJuFFVQgl8dLIwmsgq7EM5yX1sC-FoPASUNUwyWaQCj3vnS4mWW0WEUk1FyVRWGqOeNRWixD72scCLhX196SvmLiq3VrxHSQPPszaKJXNR5hbN6nE7tuh0T3iQVwcDZYbovGrVxJAOxfs1LlrTOE_pwGKR76hb92_BfFNUbyPQFjnTozppH71_oTFcoi784"
-        )
-      }
-    }, 2000)
+      setState("error")
+      setErrorMessage("Missing required data. Please go back.")
+      return
+    }
 
-    return () => clearTimeout(timer)
+    // Start generation
+    generateMeme()
   }, [])
+
+  async function generateMeme() {
+    setState("loading")
+    setErrorMessage("")
+
+    console.log("[MemeViewer] Starting generation...")
+    console.log("[MemeViewer] Topic:", topic)
+    console.log("[MemeViewer] Facts:", facts)
+
+    try {
+      // Call API to compose and render meme
+      const result = await composeAndRender({
+        topic: topic!,
+        angle: "educational", // Default angle
+        template_id: template!, // User-selected template
+        facts: facts!.slice(0, 4).map((fact) => ({
+          quote: fact.quote,
+          source: fact.url,
+        })),
+        ratios: ["1:1"], // Generate 1:1 ratio by default
+      })
+
+      console.log("[MemeViewer] Generation successful!")
+      console.log("[MemeViewer] Images:", result.images)
+
+      if (result.images && result.images.length > 0) {
+        setState("loaded")
+        setMemeUrl(result.images[0].url)
+        useToastStore
+          .getState()
+          .showToast("Meme generated successfully!", "success")
+      } else {
+        throw new Error("No images returned from API")
+      }
+    } catch (error) {
+      console.error("[MemeViewer] Generation failed:", error)
+      setState("error")
+      const message =
+        error instanceof Error ? error.message : "Failed to generate meme"
+      setErrorMessage(message)
+      useToastStore.getState().showToast(message, "error")
+    }
+  }
 
   function handleBack() {
     router.back()
@@ -38,25 +92,25 @@ export default function MemeViewerPage() {
 
   function handleDownload() {
     if (memeUrl) {
-      window.open(memeUrl, "_blank")
+      // Create a temporary link to download the image
+      const link = document.createElement("a")
+      link.href = memeUrl
+      link.download = `meme-${Date.now()}.png`
+      link.target = "_blank"
+      document.body.appendChild(link)
+      link.click()
+      document.body.removeChild(link)
+
+      useToastStore.getState().showToast("Download started!", "success")
     }
   }
 
   function handleGenerate() {
-    setState("loading")
-    setTimeout(() => {
-      setState("loaded")
-    }, 2000)
+    generateMeme()
   }
 
   function handleRetry() {
-    setState("loading")
-    setTimeout(() => {
-      setState("loaded")
-      setMemeUrl(
-        "https://lh3.googleusercontent.com/aida-public/AB6AXuB6ynCvJ0a1Ar4I2gDmZpHSq46aj7Fi1h9WF71VnCbEAcc5K6B72HwXtK8nBU_e2WVEZ6-_xPgqk7hEBps17NXXoA4SkVxuo5o8pB3IZ0OwPDlhDAiOGcXHttWi7_mn-k_oZRA0PhLyGQKn5KTwQvAQc0ltITw8Y3Rb2Vpv7GTDS379y8y4GULCKVAV0kLTMxfXQPTCRHol9NJv_erm-S9PWxcA1WwP2-bgsxqdy2vqdao3AKejHQrvdSiQJNYtFvqIbElYL5TtBHY"
-      )
-    }, 2000)
+    generateMeme()
   }
 
   return (
@@ -64,40 +118,6 @@ export default function MemeViewerPage() {
       className="relative flex min-h-screen w-full flex-col"
       style={{ backgroundColor: state === "loading" ? "#1E1E1E" : "#191022" }}
     >
-      {/* Dev: State Switcher (remove in production) */}
-      <div className="fixed top-20 right-4 z-50 flex gap-2">
-        <button
-          onClick={() => setState("loading")}
-          className={`px-3 py-1 text-xs rounded ${
-            state === "loading"
-              ? "bg-blue-500 text-white"
-              : "bg-gray-700 text-gray-300"
-          }`}
-        >
-          Loading
-        </button>
-        <button
-          onClick={() => setState("loaded")}
-          className={`px-3 py-1 text-xs rounded ${
-            state === "loaded"
-              ? "bg-green-500 text-white"
-              : "bg-gray-700 text-gray-300"
-          }`}
-        >
-          Loaded
-        </button>
-        <button
-          onClick={() => setState("error")}
-          className={`px-3 py-1 text-xs rounded ${
-            state === "error"
-              ? "bg-red-500 text-white"
-              : "bg-gray-700 text-gray-300"
-          }`}
-        >
-          Error
-        </button>
-      </div>
-
       {/* Header */}
       <div
         className="flex items-center p-4 pb-2 justify-between"
@@ -180,10 +200,10 @@ export default function MemeViewerPage() {
               <div className="flex flex-col items-center gap-2">
                 <CloudOff className="text-red-500 w-16 h-16" />
                 <p className="text-white text-lg font-bold leading-tight tracking-[-0.015em] text-center">
-                  Network Failed
+                  Generation Failed
                 </p>
                 <p className="text-white/80 text-sm font-normal leading-normal text-center">
-                  Please try again.
+                  {errorMessage || "Please try again."}
                 </p>
                 <button
                   onClick={handleRetry}

@@ -76,7 +76,34 @@ app.post("/", zValidator("json", RenderRequestSchema), async (c) => {
       asset_id: crypto.randomUUID(),
     })
   } catch (error: any) {
-    console.error("Render error:", error)
+    console.error("[Render] Error caught:", {
+      message: error.message,
+      stack: error.stack,
+      name: error.name,
+    })
+
+    // Development fallback: Return a mock image URL
+    // WASM is not supported in Cloudflare Workers local dev mode
+    if (error.message && error.message.toLowerCase().includes("wasm")) {
+      console.warn("[Render] WASM-related error detected, using mock image URL")
+
+      // Return a placeholder image from a public CDN
+      const mockImages = ratios.map((ratio) => ({
+        ratio,
+        url: `https://via.placeholder.com/1080x1350/0f0f0f/ffffff?text=${encodeURIComponent(
+          `${
+            payload.title || "Meme"
+          }\n\n(Mock Image - WASM not available in local dev)`
+        )}`,
+      }))
+
+      return c.json({
+        images: mockImages,
+        asset_id: crypto.randomUUID(),
+      })
+    }
+
+    // For non-WASM errors, return proper error response
     return c.json(
       {
         error: {

@@ -79,16 +79,54 @@ app.notFound((c) => {
 })
 
 // Cron trigger (daily trends update)
+// Implements EPIC5-S3: Cron 任务
 export default {
   fetch: app.fetch,
 
   async scheduled(event: ScheduledEvent, env: Env, ctx: ExecutionContext) {
-    console.log("Cron triggered:", event.cron)
+    console.log("[Cron] Daily trends update started:", event.cron)
 
-    // TODO: Implement trends ingest + analyze
-    // await ingestTrends(env);
-    // await analyzeTrends(env);
+    try {
+      // Import trends service dynamically
+      const { fetchAndClusterTrends } = await import("./services/trends")
 
-    console.log("Daily trends update completed")
+      // 1. Fetch and cluster trends from multiple sources
+      const topics = await fetchAndClusterTrends({
+        twitterApiKey: env.TWITTER_API_KEY,
+        includeInstagram: false, // Optional, can enable if needed
+      })
+      console.log(`[Cron] Fetched and clustered ${topics.length} topics`)
+
+      // 2. Cache to KV
+      const today = new Date().toISOString().split("T")[0]
+
+      if (env.CACHE) {
+        const response = {
+          date: today,
+          topics,
+        }
+
+        await env.CACHE.put(
+          `trends:${today}`,
+          JSON.stringify(response),
+          { expirationTtl: 86400 * 7 } // Keep for 7 days
+        )
+
+        console.log(`[Cron] Cached to KV: trends:${today}`)
+      } else {
+        console.warn("[Cron] KV namespace not available, skipping cache")
+      }
+
+      // 3. Optional: Store to Supabase for historical analysis
+      // if (env.SUPABASE_URL && env.SUPABASE_SERVICE_KEY) {
+      //   const storage = new StorageService(env.SUPABASE_URL, env.SUPABASE_SERVICE_KEY)
+      //   await storage.storeTrends(topics)
+      // }
+
+      console.log("[Cron] Daily trends update completed successfully")
+    } catch (error) {
+      console.error("[Cron] Daily trends update failed:", error)
+      // Don't throw - let the Cron continue even if one execution fails
+    }
   },
 }

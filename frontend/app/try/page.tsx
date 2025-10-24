@@ -1,6 +1,6 @@
 "use client"
 
-import { useState } from "react"
+import { useState, useRef } from "react"
 import {
   ArrowLeft,
   RefreshCw,
@@ -14,12 +14,14 @@ import { FactPicker } from "@/components/composer/FactPicker"
 import { TemplateGrid } from "@/components/composer/TemplateGrid"
 import { MemeViewer } from "@/components/viewer/MemeViewer"
 import { useComposerStore } from "@/lib/stores/composer"
+import { useToastStore } from "@/lib/stores/toast"
 
 export default function TryPage() {
   const [step, setStep] = useState<"topic" | "facts" | "template" | "result">(
     "topic"
   )
   const { topic, facts, template, result } = useComposerStore()
+  const trendSelectorRef = useRef<{ refreshTrends: () => void }>(null)
 
   const stepTitles = {
     topic: "Select a Trend",
@@ -37,8 +39,10 @@ export default function TryPage() {
   const handleRefresh = () => {
     // Refresh logic based on current step
     if (step === "topic") {
-      // Refresh trends
-      window.location.reload()
+      // Trigger TrendSelector refresh
+      if (trendSelectorRef.current?.refreshTrends) {
+        trendSelectorRef.current.refreshTrends()
+      }
     }
   }
 
@@ -92,6 +96,7 @@ export default function TryPage() {
         <div className="flex-1 overflow-y-auto overflow-x-hidden">
           {step === "topic" && (
             <TrendSelector
+              ref={trendSelectorRef}
               onNext={(selectedTopic) => {
                 useComposerStore.setState({ topic: selectedTopic })
                 setStep("facts")

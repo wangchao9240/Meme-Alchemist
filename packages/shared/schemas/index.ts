@@ -57,7 +57,7 @@ export const ComposeRequestSchema = z.object({
         source: z.string().url(),
       })
     )
-    .min(2)
+    .min(1) // Allow 1-4 facts
     .max(4),
 })
 

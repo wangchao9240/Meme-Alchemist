@@ -6,8 +6,8 @@ pages_build_output_dir = "out"
 
 # Environment variables (for wrangler pages deploy)
 [env.production.vars]
-NEXT_PUBLIC_API_URL = "https://meme-alchemist-api.your-subdomain.workers.dev"
+NEXT_PUBLIC_API_URL = "https://meme-alchemist-api.chasenwang1026.workers.dev"
 
 [env.preview.vars]
-NEXT_PUBLIC_API_URL = "https://meme-alchemist-api.your-subdomain.workers.dev"
+NEXT_PUBLIC_API_URL = "https://meme-alchemist-api.chasenwang1026.workers.dev"
 

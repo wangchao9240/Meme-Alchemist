@@ -8,7 +8,7 @@
     "start": "next start",
     "lint": "next lint",
     "typecheck": "tsc --noEmit",
-    "deploy": "pnpm build && wrangler pages deploy out --project-name=meme-alchemist"
+    "deploy": "bash deploy.sh"
   },
   "dependencies": {
     "clsx": "^2.1.1",

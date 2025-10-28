@@ -13,6 +13,10 @@ binding = "CACHE"
 id = "ce6e9d39dee2414e81046e366a49c4b9"
 preview_id = "7bc1199d51514f0092c1de8600498ac3"
 
+# Workers AI
+[ai]
+binding = "AI"
+
 # Cron Triggers
 [triggers]
 crons = ["0 23 * * *"]  # Daily at 23:00 UTC (09:00 AEST)

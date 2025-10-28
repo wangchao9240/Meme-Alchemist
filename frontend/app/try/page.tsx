@@ -1,204 +1,203 @@
 "use client"
 
-import { useState, useRef } from "react"
-import {
-  ArrowLeft,
-  RefreshCw,
-  Home,
-  TrendingUp,
-  PlusCircle,
-  User,
-} from "lucide-react"
-import { TrendSelector } from "@/components/composer/TrendSelector"
-import { FactPicker } from "@/components/composer/FactPicker"
-import { TemplateGrid } from "@/components/composer/TemplateGrid"
-import { MemeViewer } from "@/components/viewer/MemeViewer"
+import { useState, useEffect, useRef } from "react"
+import { useRouter } from "next/navigation"
+import { fetchTrends } from "@/lib/api-client"
 import { useComposerStore } from "@/lib/stores/composer"
 import { useToastStore } from "@/lib/stores/toast"
+import type { TrendTopic } from "@meme-alchemist/shared/types"
 
 export default function TryPage() {
-  const [step, setStep] = useState<"topic" | "facts" | "template" | "result">(
-    "topic"
-  )
-  const { topic, facts, template, result } = useComposerStore()
-  const trendSelectorRef = useRef<{ refreshTrends: () => void }>(null)
+  const router = useRouter()
+  const [trends, setTrends] = useState<TrendTopic[]>([])
+  const [loading, setLoading] = useState(true)
+  const [customTopic, setCustomTopic] = useState("")
+  const [selectedTrend, setSelectedTrend] = useState<string | null>(null)
 
-  const stepTitles = {
-    topic: "Select a Trend",
-    facts: "Choose a Fact",
-    template: "Choose Template",
-    result: "Your Meme",
-  }
+  useEffect(() => {
+    loadTrends()
+  }, [])
 
-  const handleBack = () => {
-    if (step === "facts") setStep("topic")
-    else if (step === "template") setStep("facts")
-    else if (step === "result") setStep("template")
-  }
+  async function loadTrends(isManualRefresh = false) {
+    try {
+      setLoading(true)
+      const data = await fetchTrends()
+      setTrends(data.topics)
 
-  const handleRefresh = () => {
-    // Refresh logic based on current step
-    if (step === "topic") {
-      // Trigger TrendSelector refresh
-      if (trendSelectorRef.current?.refreshTrends) {
-        trendSelectorRef.current.refreshTrends()
+      if (isManualRefresh) {
+        useToastStore.getState().showToast("Trends refreshed", "success")
       }
+    } catch (error) {
+      console.error("Failed to load trends:", error)
+      useToastStore
+        .getState()
+        .showToast("Failed to load trends, using fallback", "warning")
+
+      // Set fallback trends
+      setTrends([
+        {
+          topic_id: "1",
+          label: "Stock Market Frenzy",
+          score: 95,
+          samples: ["To the moon!"],
+        },
+        {
+          topic_id: "2",
+          label: "The Future of Remote Work",
+          score: 88,
+          samples: ["Memes about WFH life"],
+        },
+        {
+          topic_id: "3",
+          label: "Retro Gaming Revival",
+          score: 82,
+          samples: ["Nostalgia hits different"],
+        },
+        {
+          topic_id: "4",
+          label: "AI Takes Over",
+          score: 78,
+          samples: ["Our new robot overlords"],
+        },
+        {
+          topic_id: "5",
+          label: "Sustainable Living",
+          score: 75,
+          samples: ["Saving the planet, one meme at a time"],
+        },
+        {
+          topic_id: "6",
+          label: "Latest Movie Hype",
+          score: 70,
+          samples: [],
+        },
+      ])
+    } finally {
+      setLoading(false)
     }
   }
 
+  function handleTrendClick(topic: string) {
+    setSelectedTrend(topic)
+    useComposerStore.setState({ topic })
+    setTimeout(() => {
+      router.push("/fact-picker")
+    }, 150)
+  }
+
+  function handleCustomSubmit(e: React.FormEvent) {
+    e.preventDefault()
+    if (customTopic.trim()) {
+      useComposerStore.setState({ topic: customTopic.trim() })
+      router.push("/fact-picker")
+    }
+  }
+
+  function handleBack() {
+    router.push("/")
+  }
+
+  function handleRefresh() {
+    loadTrends(true)
+  }
+
   return (
-    <div
-      className="relative flex h-screen w-full flex-col overflow-hidden"
-      style={{
-        backgroundColor: "var(--background-dark)",
-        color: "var(--on-surface-dark)",
-      }}
-    >
-      <main className="flex-1 flex flex-col overflow-hidden">
-        {/* Header */}
-        <header
-          className="flex items-center justify-between px-4 pt-4 pb-6 shrink-0 safe-area-inset-top"
-          style={{ backgroundColor: "var(--background-dark)" }}
+    <div className="relative flex min-h-screen w-full flex-col bg-[#191022]">
+      {/* Header */}
+      <header className="sticky top-0 z-10 flex h-16 items-center justify-between bg-[#191022] px-4">
+        <button
+          onClick={handleBack}
+          className="flex size-12 shrink-0 items-center justify-start touch-manipulation"
+          aria-label="Back"
         >
-          <button
-            onClick={handleBack}
-            aria-label="Back"
-            className="flex size-10 items-center justify-center touch-manipulation"
-            style={{
-              opacity: step === "topic" ? 0.3 : 1,
-              pointerEvents: step === "topic" ? "none" : "auto",
-            }}
+          <span
+            className="material-symbols-outlined text-white/90"
+            style={{ fontSize: "28px" }}
           >
-            <ArrowLeft size={24} style={{ color: "var(--on-surface-dark)" }} />
-          </button>
-
-          <h1
-            className="text-xl font-bold leading-tight"
-            style={{ color: "var(--on-surface-dark)" }}
+            arrow_back
+          </span>
+        </button>
+        <h1 className="flex-1 text-center text-xl font-bold text-white">
+          Select a Trend
+        </h1>
+        <button
+          onClick={handleRefresh}
+          className="flex size-12 shrink-0 items-center justify-end touch-manipulation"
+          aria-label="Refresh"
+          disabled={loading}
+        >
+          <span
+            className={`material-symbols-outlined text-white/90 ${
+              loading ? "animate-spin" : ""
+            }`}
+            style={{ fontSize: "28px" }}
           >
-            {stepTitles[step]}
-          </h1>
+            refresh
+          </span>
+        </button>
+      </header>
 
-          <button
-            onClick={handleRefresh}
-            aria-label="Refresh"
-            className="flex size-10 items-center justify-center touch-manipulation"
-            style={{
-              opacity: step === "topic" ? 1 : 0.3,
-              pointerEvents: step === "topic" ? "auto" : "none",
-            }}
-          >
-            <RefreshCw size={24} style={{ color: "var(--on-surface-dark)" }} />
-          </button>
-        </header>
+      {/* Custom Topic Input - Sticky */}
+      <div className="sticky top-16 z-10 bg-[#191022] px-4 pb-4 pt-2">
+        <p className="mb-2 text-sm text-white/60">Have a topic in mind?</p>
+        <form onSubmit={handleCustomSubmit}>
+          <label className="flex h-14 w-full min-w-40 flex-col">
+            <div className="flex h-full w-full flex-1 items-stretch rounded-xl border border-white/20 bg-[#2d1f3d] transition-all focus-within:border-[#a855f7] focus-within:ring-2 focus-within:ring-[#a855f7]/50">
+              <div className="flex items-center justify-center pl-4 text-white/60">
+                <span className="material-symbols-outlined">search</span>
+              </div>
+              <input
+                type="text"
+                value={customTopic}
+                onChange={(e) => setCustomTopic(e.target.value)}
+                className="form-input h-full min-w-0 flex-1 resize-none overflow-hidden rounded-r-xl border-none bg-transparent px-3 text-base font-normal text-white placeholder:text-white/60 focus:outline-0 focus:ring-0"
+                placeholder="e.g., 'AI in healthcare'"
+              />
+            </div>
+          </label>
+        </form>
+      </div>
 
-        {/* Content - Scrollable */}
-        <div className="flex-1 overflow-y-auto overflow-x-hidden">
-          {step === "topic" && (
-            <TrendSelector
-              ref={trendSelectorRef}
-              onNext={(selectedTopic) => {
-                useComposerStore.setState({ topic: selectedTopic })
-                setStep("facts")
-              }}
-              onBack={handleBack}
-            />
-          )}
-
-          {step === "facts" && (
-            <FactPicker
-              topic={topic}
-              onNext={(selectedFacts) => {
-                useComposerStore.setState({ facts: selectedFacts })
-                setStep("template")
-              }}
-              onBack={() => setStep("topic")}
-            />
-          )}
-
-          {step === "template" && (
-            <TemplateGrid
-              onNext={(selectedTemplate) => {
-                useComposerStore.setState({ template: selectedTemplate })
-                setStep("result")
-              }}
-              onBack={() => setStep("facts")}
-            />
-          )}
-
-          {step === "result" && (
-            <MemeViewer
-              result={result}
-              onReset={() => {
-                useComposerStore.getState().reset()
-                setStep("topic")
-              }}
-            />
-          )}
-        </div>
+      {/* Trending Topics List */}
+      <main className="flex-1 space-y-3 overflow-y-auto px-4 pb-8">
+        {loading ? (
+          // Loading skeletons
+          <>
+            {Array.from({ length: 6 }).map((_, i) => (
+              <div
+                key={i}
+                className="flex min-h-[72px] items-center rounded-2xl bg-[#2d1f3d] p-5 animate-pulse"
+              >
+                <div className="flex flex-1 flex-col gap-2">
+                  <div className="h-5 w-3/4 rounded bg-white/10"></div>
+                  <div className="h-4 w-1/2 rounded bg-white/10"></div>
+                </div>
+              </div>
+            ))}
+          </>
+        ) : (
+          trends.map((trend) => (
+            <button
+              key={trend.topic_id}
+              onClick={() => handleTrendClick(trend.label)}
+              className={`group flex min-h-[72px] w-full cursor-pointer items-center rounded-2xl border-2 p-5 transition-all hover:bg-[#352545] active:scale-95 touch-manipulation ${
+                selectedTrend === trend.label
+                  ? "border-[#a855f7] bg-[#352545]"
+                  : "border-transparent bg-[#2d1f3d] hover:border-[#a855f7]"
+              }`}
+            >
+              <div className="flex flex-1 flex-col justify-center text-left">
+                <p className="text-lg font-bold text-white">{trend.label}</p>
+                {trend.samples && trend.samples.length > 0 && (
+                  <p className="text-sm font-normal text-white/60">
+                    {trend.samples[0]}
+                  </p>
+                )}
+              </div>
+            </button>
+          ))
+        )}
       </main>
-
-      {/* Bottom Navigation */}
-      <footer
-        className="fixed bottom-0 left-0 right-0 z-10 border-t safe-area-inset-bottom"
-        style={{
-          backgroundColor: "rgba(28, 24, 37, 0.8)",
-          backdropFilter: "blur(8px)",
-          borderColor: "var(--outline-variant)",
-        }}
-      >
-        <nav className="flex justify-around items-center h-20">
-          <NavItem icon={Home} label="Home" href="/" />
-          <NavItem
-            icon={TrendingUp}
-            label="Trending"
-            href="/try"
-            active={true}
-          />
-          <NavItem icon={PlusCircle} label="Create" href="/try" />
-          <NavItem icon={User} label="Profile" href="/profile" />
-        </nav>
-      </footer>
     </div>
-  )
-}
-
-interface NavItemProps {
-  icon: React.ElementType
-  label: string
-  href: string
-  active?: boolean
-}
-
-function NavItem({ icon: Icon, label, href, active = false }: NavItemProps) {
-  return (
-    <a
-      href={href}
-      aria-label={label}
-      aria-current={active ? "page" : undefined}
-      className="flex flex-col items-center gap-1 touch-manipulation min-h-[48px] min-w-[56px] justify-center"
-      style={{
-        color: active ? "var(--primary)" : "var(--on-surface-variant-dark)",
-      }}
-    >
-      {active ? (
-        <div
-          className="rounded-full px-7 py-1.5 mb-1"
-          style={{ backgroundColor: "var(--primary-container)" }}
-        >
-          <Icon size={24} style={{ color: "var(--on-primary-container)" }} />
-        </div>
-      ) : (
-        <Icon size={24} />
-      )}
-      <span
-        className={`text-xs ${active ? "font-bold" : "font-medium"}`}
-        style={{
-          color: active ? "var(--primary)" : "var(--on-surface-variant-dark)",
-        }}
-      >
-        {label}
-      </span>
-    </a>
   )
 }

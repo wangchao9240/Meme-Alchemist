@@ -1,52 +1,62 @@
 import Link from "next/link"
-import { Sparkles, Zap, TrendingUp } from "lucide-react"
 
 export default function HomePage() {
   return (
-    <main className="min-h-screen bg-gradient-to-br from-gray-900 via-gray-800 to-black text-white">
-      <div className="container mx-auto px-4 py-16">
+    <div className="relative flex min-h-screen w-full flex-col overflow-x-hidden bg-gradient-to-b from-[#0a0a0a] to-[#000000] text-white">
+      <main className="flex-grow">
         {/* Hero Section */}
-        <div className="text-center max-w-3xl mx-auto mb-16">
-          <h1 className="text-5xl md:text-6xl font-bold mb-6 bg-gradient-to-r from-purple-400 to-pink-600 bg-clip-text text-transparent">
-            Meme Alchemist
-          </h1>
-          <p className="text-xl md:text-2xl text-gray-300 mb-8">
-            AI 驱动的梗图生成器 · 热榜话题 + 事实证据 = 有趣有据
-          </p>
-          <Link
-            href="/try"
-            className="inline-flex items-center gap-2 px-8 py-4 bg-gradient-to-r from-purple-500 to-pink-500 rounded-lg font-semibold text-lg hover:from-purple-600 hover:to-pink-600 transition-all shadow-lg hover:shadow-xl touch-manipulation"
-          >
-            <Sparkles className="w-5 h-5" />
-            立即生成梗图
-          </Link>
+        <div className="relative flex h-auto min-h-[50vh] w-full flex-col items-center justify-center p-4 pt-16 @container sm:pt-4">
+          <div className="flex flex-col gap-6 text-center @[480px]:gap-8">
+            <div className="flex flex-col gap-2">
+              <h1 className="gradient-text text-5xl font-black leading-tight tracking-tighter @[480px]:text-6xl">
+                Meme Alchemist
+              </h1>
+              <h2 className="text-lg font-normal leading-normal text-gray-300 @[480px]:text-xl">
+                AI-Powered Meme Generator · Trending Topics + Facts = Engaging
+                Content
+              </h2>
+            </div>
+            <div className="flex justify-center">
+              <Link
+                href="/try"
+                className="gradient-button flex min-h-[56px] w-full max-w-xs cursor-pointer items-center justify-center gap-2 overflow-hidden rounded-xl px-6 py-4 text-base font-bold leading-normal text-white transition-all duration-300 hover:scale-105 active:scale-95 @[480px]:px-8 @[480px]:py-5 @[480px]:text-lg touch-manipulation"
+              >
+                <span className="material-symbols-outlined">auto_awesome</span>
+                <span className="truncate">Create Your Meme</span>
+              </Link>
+            </div>
+          </div>
         </div>
 
-        {/* Features */}
-        <div className="grid md:grid-cols-3 gap-8 max-w-5xl mx-auto">
-          <FeatureCard
-            icon={<TrendingUp className="w-8 h-8" />}
-            title="实时热榜"
-            description="自动抓取微博、知乎等平台热门话题"
-          />
-          <FeatureCard
-            icon={<Zap className="w-8 h-8" />}
-            title="一键生成"
-            description="5-10 秒内生成带出处的专业梗图"
-          />
-          <FeatureCard
-            icon={<Sparkles className="w-8 h-8" />}
-            title="可追溯性"
-            description="每个事实都有来源链接，100% 可验证"
-          />
+        {/* Features Section */}
+        <div className="flex flex-col gap-6 px-4 py-8 @container">
+          <div className="grid grid-cols-1 gap-4 @[640px]:grid-cols-3">
+            <FeatureCard
+              icon="trending_up"
+              title="Real-Time Trends"
+              description="Our AI scours the internet for the latest trending topics to keep your content fresh and relevant."
+            />
+            <FeatureCard
+              icon="bolt"
+              title="One-Click Generation"
+              description="Generate engaging memes with a single click. No design skills required, just pure creativity."
+            />
+            <FeatureCard
+              icon="auto_awesome"
+              title="Verifiable Facts"
+              description="Add a unique twist to your memes by incorporating interesting and verifiable facts automatically."
+            />
+          </div>
         </div>
+      </main>
 
-        {/* Demo Preview (optional) */}
-        <div className="mt-16 text-center text-gray-400 text-sm">
-          <p>简历展示项目 · MVP 版本</p>
-        </div>
-      </div>
-    </main>
+      {/* Footer */}
+      <footer className="flex flex-col gap-6 px-5 py-6 text-center @container">
+        <p className="text-sm font-normal leading-normal text-gray-500">
+          Portfolio Project · MVP Version
+        </p>
+      </footer>
+    </div>
   )
 }
 
@@ -55,15 +65,21 @@ function FeatureCard({
   title,
   description,
 }: {
-  icon: React.ReactNode
+  icon: string
   title: string
   description: string
 }) {
   return (
-    <div className="bg-gray-800/50 backdrop-blur-sm rounded-lg p-6 border border-gray-700 hover:border-purple-500 transition-colors">
-      <div className="text-purple-400 mb-4">{icon}</div>
-      <h3 className="text-xl font-semibold mb-2">{title}</h3>
-      <p className="text-gray-400">{description}</p>
+    <div className="flex flex-1 flex-col gap-2 rounded-xl border border-gray-800 bg-[#1a1a1a]/50 p-5 backdrop-blur-sm transition-transform hover:scale-[1.02] hover:border-[#b75af2]/50">
+      <div className="text-[#b75af2]">
+        <span className="material-symbols-outlined text-3xl">{icon}</span>
+      </div>
+      <div className="flex flex-col gap-1">
+        <h2 className="text-lg font-bold leading-tight text-white">{title}</h2>
+        <p className="text-base font-normal leading-normal text-gray-400">
+          {description}
+        </p>
+      </div>
     </div>
   )
 }

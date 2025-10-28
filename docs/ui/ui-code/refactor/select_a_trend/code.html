@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html class="dark" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Select a Trend</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Spline+Sans:wght@400;500;600;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined" rel="stylesheet"/>
+<script id="tailwind-config">
+      tailwind.config = {
+        darkMode: "class",
+        theme: {
+          extend: {
+            colors: {
+              "primary": "#a855f7",
+              "background-light": "#f7f6f8",
+              "background-dark": "#191022",
+            },
+            fontFamily: {
+              "display": ["Spline Sans", "sans-serif"]
+            },
+            borderRadius: {"DEFAULT": "0.5rem", "lg": "1rem", "xl": "1.5rem", "full": "9999px"},
+          },
+        },
+      }
+    </script>
+<style>
+      body {
+        min-height: 100vh;
+        min-height: 100dvh;
+      }
+      .material-symbols-outlined {
+        font-variation-settings:
+        'FILL' 0,
+        'wght' 400,
+        'GRAD' 0,
+        'opsz' 24
+      }
+      .safe-area-inset-bottom {
+        padding-bottom: env(safe-area-inset-bottom);
+      }
+    </style>
+<style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+<style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+<style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+  </head>
+<body class="bg-background-light dark:bg-background-dark font-display">
+<div class="relative flex min-h-screen w-full flex-col">
+<header class="sticky top-0 z-10 flex h-16 items-center justify-between bg-background-light dark:bg-background-dark px-4">
+<div class="flex size-12 shrink-0 items-center justify-start">
+<span class="material-symbols-outlined text-white/90" style="font-size: 28px;">arrow_back</span>
+</div>
+<h1 class="flex-1 text-center text-xl font-bold text-white">Select a Trend</h1>
+<div class="flex size-12 shrink-0 items-center justify-end">
+<span class="material-symbols-outlined text-white/90" style="font-size: 28px;">refresh</span>
+</div>
+</header>
+<div class="sticky top-16 z-10 bg-background-light dark:bg-background-dark px-4 pb-4 pt-2">
+<p class="mb-2 text-sm text-white/60">Have a topic in mind?</p>
+<label class="flex h-14 w-full min-w-40 flex-col">
+<div class="flex h-full w-full flex-1 items-stretch rounded-xl border border-white/20 bg-[#2d1f3d] transition-all focus-within:border-primary focus-within:ring-2 focus-within:ring-primary/50">
+<div class="flex items-center justify-center pl-4 text-white/60">
+<span class="material-symbols-outlined">search</span>
+</div>
+<input class="form-input h-full min-w-0 flex-1 resize-none overflow-hidden rounded-r-xl border-none bg-transparent px-3 text-base font-normal text-white placeholder:text-white/60 focus:outline-0 focus:ring-0" placeholder="e.g., 'AI in healthcare'" value=""/>
+</div>
+</label>
+</div>
+<main class="flex-1 space-y-3 overflow-y-auto px-4 pb-4">
+<div class="group flex min-h-[72px] cursor-pointer items-center rounded-2xl border-2 border-transparent bg-[#2d1f3d] p-5 transition-all hover:border-primary hover:bg-[#352545] active:scale-95">
+<div class="flex flex-1 flex-col justify-center">
+<p class="text-lg font-bold text-white">Stock Market Frenzy</p>
+<p class="text-sm font-normal text-white/60">To the moon!</p>
+</div>
+</div>
+<div class="group flex min-h-[72px] cursor-pointer items-center rounded-2xl border-2 border-primary bg-[#352545] p-5 transition-all active:scale-95">
+<div class="flex flex-1 flex-col justify-center">
+<p class="text-lg font-bold text-white">The Future of Remote Work</p>
+<p class="text-sm font-normal text-white/60">Memes about WFH life</p>
+</div>
+</div>
+<div class="group flex min-h-[72px] cursor-pointer items-center rounded-2xl border-2 border-transparent bg-[#2d1f3d] p-5 transition-all hover:border-primary hover:bg-[#352545] active:scale-95">
+<div class="flex flex-1 flex-col justify-center">
+<p class="text-lg font-bold text-white">Retro Gaming Revival</p>
+<p class="text-sm font-normal text-white/60">Nostalgia hits different</p>
+</div>
+</div>
+<div class="group flex min-h-[72px] cursor-pointer items-center rounded-2xl border-2 border-transparent bg-[#2d1f3d] p-5 transition-all hover:border-primary hover:bg-[#352545] active:scale-95">
+<div class="flex flex-1 flex-col justify-center">
+<p class="text-lg font-bold text-white">AI Takes Over</p>
+<p class="text-sm font-normal text-white/60">Our new robot overlords</p>
+</div>
+</div>
+<div class="group flex min-h-[72px] cursor-pointer items-center rounded-2xl border-2 border-transparent bg-[#2d1f3d] p-5 transition-all hover:border-primary hover:bg-[#352545] active:scale-95">
+<div class="flex flex-1 flex-col justify-center">
+<p class="text-lg font-bold text-white">Sustainable Living</p>
+<p class="text-sm font-normal text-white/60">Saving the planet, one meme at a time</p>
+</div>
+</div>
+<div class="group flex min-h-[72px] cursor-pointer items-center rounded-2xl border-2 border-transparent bg-[#2d1f3d] p-5 transition-all hover:border-primary hover:bg-[#352545] active:scale-95">
+<div class="flex flex-1 flex-col justify-center">
+<p class="text-lg font-bold text-white">Latest Movie Hype</p>
+</div>
+</div>
+</main>
+</div>
+</body></html>

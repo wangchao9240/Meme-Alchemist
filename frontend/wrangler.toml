@@ -1,0 +1,13 @@
+name = "meme-alchemist-web"
+compatibility_date = "2025-01-10"
+
+# Pages configuration
+pages_build_output_dir = "out"
+
+# Environment variables (for wrangler pages deploy)
+[env.production.vars]
+NEXT_PUBLIC_API_URL = "https://meme-alchemist-api.your-subdomain.workers.dev"
+
+[env.preview.vars]
+NEXT_PUBLIC_API_URL = "https://meme-alchemist-api.your-subdomain.workers.dev"
+

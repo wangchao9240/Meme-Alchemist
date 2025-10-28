@@ -2,8 +2,8 @@ import { Hono } from "hono"
 import { zValidator } from "@hono/zod-validator"
 import type { Env } from "../index"
 import { RenderRequestSchema } from "@meme-alchemist/shared/schemas"
-import { SatoriRenderer, getTemplate } from "../services/renderer"
 import { StorageService } from "../services/storage-service"
+import { getTemplate } from "../services/renderer"
 
 const app = new Hono<{ Bindings: Env }>()
 
@@ -38,10 +38,20 @@ app.post("/", zValidator("json", RenderRequestSchema), async (c) => {
     )
   }
 
-  try {
-    const renderer = new SatoriRenderer()
-    await renderer.initialize()
+  // Check Workers AI binding
+  if (!c.env.AI) {
+    return c.json(
+      {
+        error: {
+          code: "AI_NOT_CONFIGURED",
+          message: "Cloudflare Workers AI not configured",
+        },
+      },
+      503
+    )
+  }
 
+  try {
     const storage = new StorageService(
       c.env.SUPABASE_URL,
       c.env.SUPABASE_SERVICE_KEY
@@ -49,71 +59,157 @@ app.post("/", zValidator("json", RenderRequestSchema), async (c) => {
 
     const startTime = Date.now()
 
-    // Render SVG once
-    const svg = await renderer.renderToSVG(template, payload)
-
-    // Convert to PNG and upload for each ratio
-    // For MVP, we generate same image for all ratios
-    // In future, we can adjust canvas size per ratio
-    const images = await Promise.all(
-      ratios.map(async (ratio) => {
-        const png = await renderer.svgToPng(svg)
-
-        const filename = `${Date.now()}-${ratio}.png`
-        const url = await storage.uploadImage(png, filename)
-
-        return { ratio, url }
-      })
+    // Generate prompts based on template type
+    const prompts = generatePromptsForTemplate(template_id, payload)
+    console.log(
+      `[Render] Generated ${prompts.length} prompts for ${template_id}`
     )
 
+    // Generate images for each prompt
+    const allImages = []
+
+    for (let i = 0; i < prompts.length; i++) {
+      const promptInfo = prompts[i]
+      console.log(
+        `[Render] Generating image ${i + 1}/${prompts.length}:`,
+        promptInfo.description
+      )
+
+      // Call Cloudflare Workers AI to generate image
+      const aiResponse = await c.env.AI.run(
+        "@cf/stabilityai/stable-diffusion-xl-base-1.0",
+        {
+          prompt: promptInfo.prompt,
+        }
+      )
+
+      // The response is a PNG image as Uint8Array
+      const imageBuffer = aiResponse as unknown as Uint8Array
+
+      // Upload to Supabase with descriptive filename
+      const filename = `ai-${Date.now()}-${template_id}-${promptInfo.label}.png`
+      const url = await storage.uploadImage(imageBuffer, filename)
+
+      console.log(`[Render] Image ${i + 1} generated and uploaded: ${url}`)
+
+      allImages.push({
+        ratio: ratios[0] || "1:1", // Use first ratio for all images
+        url,
+      })
+    }
+
     const duration = Date.now() - startTime
-    console.log(`[Render] Generated ${images.length} images in ${duration}ms`)
+    console.log(
+      `[Render] Generated ${allImages.length} AI images in ${duration}ms`
+    )
 
     c.header("X-Render-Duration", String(duration))
 
     return c.json({
-      images,
+      images: allImages,
       asset_id: crypto.randomUUID(),
     })
   } catch (error: any) {
-    console.error("[Render] Error caught:", {
+    console.error("[Render] AI generation error:", {
       message: error.message,
       stack: error.stack,
       name: error.name,
     })
 
-    // Development fallback: Return a mock image URL
-    // WASM is not supported in Cloudflare Workers local dev mode
-    if (error.message && error.message.toLowerCase().includes("wasm")) {
-      console.warn("[Render] WASM-related error detected, using mock image URL")
-
-      // Return a placeholder image from a public CDN
-      const mockImages = ratios.map((ratio) => ({
-        ratio,
-        url: `https://via.placeholder.com/1080x1350/0f0f0f/ffffff?text=${encodeURIComponent(
-          `${
-            payload.title || "Meme"
-          }\n\n(Mock Image - WASM not available in local dev)`
-        )}`,
-      }))
-
-      return c.json({
-        images: mockImages,
-        asset_id: crypto.randomUUID(),
-      })
-    }
-
-    // For non-WASM errors, return proper error response
     return c.json(
       {
         error: {
           code: "RENDER_FAILED",
-          message: error.message || "Failed to render image",
+          message: error.message || "Failed to generate AI image",
         },
       },
       500
     )
   }
 })
+
+/**
+ * Generate prompts based on template type
+ */
+function generatePromptsForTemplate(
+  templateId: string,
+  payload: Record<string, string>
+): Array<{ label: string; prompt: string; description: string }> {
+  const { title, body, left, right, term, definition, examples } = payload
+
+  if (templateId === "two-panel-v1") {
+    // Generate 2 images: one for left panel, one for right panel
+    const basePrompt = `Create a modern meme-style image${
+      title ? ` about "${title}"` : ""
+    }. Style: bold colors, high contrast, minimalist design, suitable for social media.`
+
+    return [
+      {
+        label: "left-panel",
+        description: "Left panel",
+        prompt: `${basePrompt} Focus on: ${left || "first perspective"}. ${
+          body || ""
+        }`,
+      },
+      {
+        label: "right-panel",
+        description: "Right panel",
+        prompt: `${basePrompt} Focus on: ${right || "second perspective"}. ${
+          body || ""
+        }`,
+      },
+    ]
+  }
+
+  if (templateId === "glossary-v1") {
+    // Generate 1 image: glossary-style definition
+    let prompt = `Create a glossary or dictionary-style image`
+
+    if (term) {
+      prompt += ` defining the term: "${term}"`
+    }
+
+    if (definition) {
+      prompt += `. Definition: ${definition}`
+    }
+
+    if (examples) {
+      prompt += `. Examples: ${examples}`
+    }
+
+    prompt +=
+      ". Style: clean, educational, modern typography, suitable for infographic."
+
+    return [
+      {
+        label: "glossary",
+        description: "Glossary definition",
+        prompt,
+      },
+    ]
+  }
+
+  // Default: generate 1 image with all content
+  let defaultPrompt = "Create a modern meme-style image"
+
+  if (title) {
+    defaultPrompt += ` with the topic: "${title}"`
+  }
+
+  if (body) {
+    defaultPrompt += `. ${body}`
+  }
+
+  defaultPrompt +=
+    ". Style: bold colors, high contrast, simple background, minimalist design, suitable for social media."
+
+  return [
+    {
+      label: "default",
+      description: "Default meme",
+      prompt: defaultPrompt,
+    },
+  ]
+}
 
 export default app

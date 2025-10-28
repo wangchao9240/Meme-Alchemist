@@ -1,3 +1,6 @@
+@import url("https://fonts.googleapis.com/css2?family=Spline+Sans:wght@400;500;600;700;900&display=swap");
+@import url("https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined");
+
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
@@ -6,10 +9,14 @@
   :root {
     /* Design System Colors */
     --background-dark: #100e16;
+    --background-dark-landing: #0a0a0a;
+    --background-dark-app: #191022;
     --surface-dark: #1c1825;
+    --card-dark: #2d1f3d;
     --on-surface-dark: #e6e0e9;
     --on-surface-variant-dark: #cac4d0;
     --primary: #a855f7;
+    --primary-alt: #b75af2;
     --primary-container: #422a63;
     --on-primary-container: #eaddff;
     --outline: #938f99;
@@ -36,14 +43,19 @@
   }
 
   body {
-    @apply font-sans antialiased;
+    @apply antialiased;
     background-color: var(--background-dark);
     color: var(--on-surface-dark);
     min-height: 100dvh;
+    font-family: "Spline Sans", system-ui, sans-serif;
   }
 
   html {
-    font-family: "Inter", system-ui, sans-serif;
+    font-family: "Spline Sans", system-ui, sans-serif;
+  }
+
+  .material-symbols-outlined {
+    font-variation-settings: "FILL" 0, "wght" 400, "GRAD" 0, "opsz" 24;
   }
 }
 
@@ -77,6 +89,24 @@
   .no-scrollbar {
     -ms-overflow-style: none;
     scrollbar-width: none;
+  }
+
+  .gradient-text {
+    background: linear-gradient(to right, #b75af2, #f973d0);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+  }
+
+  .gradient-button {
+    background: linear-gradient(to right, #b75af2, #f973d0);
+    box-shadow: 0 0 1rem rgba(183, 90, 242, 0.4),
+      0 0 2.5rem rgba(249, 115, 208, 0.3);
+  }
+
+  .gradient-button:hover {
+    box-shadow: 0 0 1.5rem rgba(183, 90, 242, 0.6),
+      0 0 3.5rem rgba(249, 115, 208, 0.4);
   }
 }
 

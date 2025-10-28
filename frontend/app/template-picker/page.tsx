@@ -2,26 +2,21 @@
 
 import { useRouter } from "next/navigation"
 import { useState } from "react"
-import { ArrowLeft } from "lucide-react"
 import { useComposerStore } from "@/lib/stores/composer"
 
-// Template definitions matching backend
+// Template definitions
 const TEMPLATES = [
   {
     id: "two-panel-v1",
     name: "Two Panel",
-    description: "对比两个观点或概念",
-    preview: "/templates/two-panel-preview.svg",
+    description: "Compare two concepts or viewpoints side-by-side.",
     ratios: ["1:1", "4:5", "9:16"],
-    color: "#0f0f0f",
   },
   {
     id: "glossary-v1",
     name: "Glossary",
-    description: "术语定义和解释",
-    preview: "/templates/glossary-preview.svg",
+    description: "Define and explain terms in an educational format.",
     ratios: ["1:1"],
-    color: "#667eea",
   },
 ]
 
@@ -50,109 +45,151 @@ export default function TemplatePickerPage() {
   }
 
   return (
-    <div
-      className="relative flex min-h-screen w-full flex-col"
-      style={{ backgroundColor: "#191022" }}
-    >
-      {/* Header */}
-      <div
-        className="sticky top-0 z-10 flex items-center p-4 pb-2 justify-between"
-        style={{ backgroundColor: "#191022" }}
-      >
-        <div className="flex size-12 shrink-0 items-center">
-          <button onClick={handleBack} className="touch-manipulation">
-            <ArrowLeft size={24} className="text-white" />
+    <div className="relative flex min-h-screen w-full flex-col items-center bg-[#191022] antialiased">
+      {/* Top App Bar */}
+      <header className="fixed top-0 z-10 mx-auto h-16 w-full max-w-md bg-[#191022]/80 px-4 backdrop-blur-sm">
+        <div className="flex h-full items-center justify-between">
+          <button
+            onClick={handleBack}
+            className="flex size-10 shrink-0 items-center justify-center touch-manipulation"
+            aria-label="Back"
+          >
+            <span className="material-symbols-outlined text-2xl text-white">
+              arrow_back
+            </span>
           </button>
+          <h1 className="flex-1 text-center text-xl font-bold text-white">
+            Choose Template
+          </h1>
+          <div className="size-10 shrink-0"></div>
         </div>
-        <h2 className="text-white text-lg font-bold leading-tight tracking-[-0.015em] flex-1 text-center">
-          Choose Template
-        </h2>
-        <div className="w-12" />
-      </div>
+      </header>
 
-      {/* Template Grid */}
-      <div className="flex-1 overflow-y-auto px-4 py-4 pb-24">
-        <div className="grid grid-cols-1 gap-4 max-w-md mx-auto">
-          {TEMPLATES.map((template) => (
-            <button
-              key={template.id}
-              onClick={() => handleSelectTemplate(template.id)}
-              className={`relative flex flex-col items-start gap-3 rounded-2xl border-2 p-5 text-left touch-manipulation transition-all ${
-                selectedTemplate === template.id
-                  ? "border-[#a855f7] bg-[#a855f7]/10"
-                  : "border-white/20 bg-[#2d1f3d] hover:border-[#a855f7]/50"
-              }`}
-            >
-              {/* Template Preview */}
-              <div
-                className="w-full aspect-[4/3] rounded-xl flex items-center justify-center text-white/50 text-sm"
-                style={{ backgroundColor: template.color }}
-              >
-                <div className="text-center">
-                  <div className="text-2xl mb-2">🎨</div>
-                  <div className="font-bold text-white">{template.name}</div>
-                </div>
-              </div>
+      {/* Main Content Grid */}
+      <main className="w-full max-w-md px-4 pt-16 pb-[120px]">
+        <div className="grid grid-cols-1 gap-5 pt-4 sm:grid-cols-2">
+          {/* Template Card 1: Two Panel */}
+          <TemplateCard
+            template={TEMPLATES[0]}
+            selected={selectedTemplate === TEMPLATES[0].id}
+            onSelect={() => handleSelectTemplate(TEMPLATES[0].id)}
+          >
+            <TwoPanelPreview />
+          </TemplateCard>
 
-              {/* Template Info */}
-              <div className="flex-1">
-                <h3 className="text-white text-lg font-bold mb-1">
-                  {template.name}
-                </h3>
-                <p className="text-white/70 text-sm mb-2">
-                  {template.description}
-                </p>
-                <div className="flex gap-2">
-                  {template.ratios.map((ratio) => (
-                    <span
-                      key={ratio}
-                      className="px-2 py-1 text-xs rounded-full bg-white/10 text-white/80"
-                    >
-                      {ratio}
-                    </span>
-                  ))}
-                </div>
-              </div>
-
-              {/* Selected Indicator */}
-              {selectedTemplate === template.id && (
-                <div className="absolute top-3 right-3 w-6 h-6 rounded-full bg-[#a855f7] flex items-center justify-center">
-                  <svg
-                    className="w-4 h-4 text-white"
-                    fill="none"
-                    stroke="currentColor"
-                    viewBox="0 0 24 24"
-                  >
-                    <path
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                      strokeWidth={2}
-                      d="M5 13l4 4L19 7"
-                    />
-                  </svg>
-                </div>
-              )}
-            </button>
-          ))}
+          {/* Template Card 2: Glossary */}
+          <TemplateCard
+            template={TEMPLATES[1]}
+            selected={selectedTemplate === TEMPLATES[1].id}
+            onSelect={() => handleSelectTemplate(TEMPLATES[1].id)}
+          >
+            <GlossaryPreview />
+          </TemplateCard>
         </div>
-      </div>
+      </main>
 
-      {/* Fixed Bottom Button */}
-      <div
-        className="fixed bottom-0 left-0 right-0 p-4"
-        style={{ backgroundColor: "#191022" }}
-      >
+      {/* Bottom CTA Button */}
+      <footer className="fixed bottom-0 z-10 w-full max-w-md bg-[#191022]/80 p-4 backdrop-blur-sm">
         <button
           onClick={handleNext}
           disabled={!selectedTemplate}
-          className={`w-full max-w-md mx-auto flex items-center justify-center rounded-lg h-12 px-5 text-base font-bold leading-normal tracking-[0.015em] touch-manipulation transition-all ${
+          className={`flex h-14 w-full items-center justify-center overflow-hidden rounded-lg text-base font-bold transition-all duration-200 touch-manipulation ${
             selectedTemplate
-              ? "bg-[#a658f3] text-white hover:bg-[#9547e3]"
-              : "bg-[#3d2f4f] text-white/50 cursor-not-allowed"
+              ? "cursor-pointer bg-[#a855f7] text-white shadow-lg shadow-[#a855f7]/20 hover:bg-[#a855f7]/90 active:scale-[0.98]"
+              : "cursor-not-allowed bg-[#3d2f4f] text-white/50"
           }`}
         >
-          Continue to Generate
+          <span>Continue to Generate</span>
         </button>
+      </footer>
+    </div>
+  )
+}
+
+interface TemplateCardProps {
+  template: (typeof TEMPLATES)[0]
+  selected: boolean
+  onSelect: () => void
+  children: React.ReactNode
+}
+
+function TemplateCard({
+  template,
+  selected,
+  onSelect,
+  children,
+}: TemplateCardProps) {
+  return (
+    <div
+      onClick={onSelect}
+      className={`group relative cursor-pointer rounded-xl border-2 p-6 transition-all duration-200 ease-in-out touch-manipulation ${
+        selected
+          ? "border-[#a855f7] bg-[#2d1f3d]/60"
+          : "border-white/20 bg-[#2d1f3d] hover:border-[#a855f7]/50"
+      }`}
+    >
+      {selected && (
+        <div className="absolute right-[-14px] top-[-14px] flex size-7 items-center justify-center rounded-full bg-[#a855f7]">
+          <span className="material-symbols-outlined text-base text-white">
+            check
+          </span>
+        </div>
+      )}
+
+      <div className="flex flex-col gap-4">
+        {/* Preview Diagram */}
+        {children}
+
+        {/* Template Info */}
+        <div className="flex flex-col gap-3">
+          <div>
+            <h2 className="text-lg font-bold text-white">{template.name}</h2>
+            <p className="text-sm text-white/70">{template.description}</p>
+          </div>
+          <div className="flex flex-wrap items-center gap-2">
+            {template.ratios.map((ratio) => (
+              <div
+                key={ratio}
+                className="flex h-7 items-center justify-center rounded-full bg-white/10 px-3"
+              >
+                <p className="text-xs font-medium text-white/80">{ratio}</p>
+              </div>
+            ))}
+          </div>
+        </div>
+      </div>
+    </div>
+  )
+}
+
+function TwoPanelPreview() {
+  return (
+    <div className="aspect-[4/3] w-full rounded-lg bg-[#0f0f0f]">
+      <div className="flex h-full w-full items-center justify-center gap-2 p-3">
+        <div className="flex h-full w-1/2 flex-col items-center justify-center gap-2 rounded bg-white/10 p-2">
+          <div className="h-1/2 w-full rounded-sm bg-white/20"></div>
+          <p className="text-[10px] font-medium text-white/70">Concept A</p>
+        </div>
+        <div className="flex h-full w-1/2 flex-col items-center justify-center gap-2 rounded bg-white/10 p-2">
+          <div className="h-1/2 w-full rounded-sm bg-white/20"></div>
+          <p className="text-[10px] font-medium text-white/70">Concept B</p>
+        </div>
+      </div>
+    </div>
+  )
+}
+
+function GlossaryPreview() {
+  return (
+    <div className="flex aspect-[4/3] w-full items-center justify-center rounded-lg bg-gradient-to-br from-[#667eea] to-[#764ba2] p-4">
+      <div className="flex w-full flex-col gap-2">
+        <p className="text-xl font-bold text-white">"Term"</p>
+        <p className="font-mono text-xs text-white/80">/tɜːrm/</p>
+        <div className="flex w-full flex-col gap-1">
+          <div className="h-1.5 w-full rounded-full bg-white/20"></div>
+          <div className="h-1.5 w-5/6 rounded-full bg-white/20"></div>
+          <div className="h-1.5 w-3/4 rounded-full bg-white/20"></div>
+        </div>
       </div>
     </div>
   )

@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html class="dark" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Meme Alchemist - AI-Powered Meme Generator</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com" rel="preconnect"/>
+<link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
+<link href="https://fonts.googleapis.com/css2?family=Spline+Sans:wght@400;700;900&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined" rel="stylesheet"/>
+<script>
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        "primary": "#b75af2",
+                        "background-light": "#f7f6f8",
+                        "background-dark": "#1b1022",
+                    },
+                    fontFamily: {
+                        "display": ["Spline Sans", "sans-serif"]
+                    },
+                    borderRadius: {
+                        "DEFAULT": "0.5rem",
+                        "lg": "1rem",
+                        "xl": "1.5rem",
+                        "full": "9999px"
+                    },
+                },
+            },
+        }
+    </script>
+<style>
+        .gradient-text {
+            background: linear-gradient(to right, #b75af2, #f973d0);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            text-fill-color: transparent;
+        }
+        .gradient-button {
+            background: linear-gradient(to right, #b75af2, #f973d0);
+            box-shadow: 0 0 1rem rgba(183, 90, 242, 0.4), 0 0 2.5rem rgba(249, 115, 208, 0.3);
+        }
+        .gradient-button:hover {
+            box-shadow: 0 0 1.5rem rgba(183, 90, 242, 0.6), 0 0 3.5rem rgba(249, 115, 208, 0.4);
+        }
+    </style>
+<style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+<style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+  </head>
+<body class="bg-gradient-to-b from-[#0a0a0a] to-[#000000] font-display text-white">
+<div class="relative flex min-h-screen w-full flex-col overflow-x-hidden">
+<main class="flex-grow">
+<div class="relative flex h-auto min-h-[50vh] w-full flex-col items-center justify-center p-4 pt-16 @container sm:pt-4">
+<div class="flex flex-col gap-6 text-center @[480px]:gap-8">
+<div class="flex flex-col gap-2">
+<h1 class="gradient-text text-5xl font-black leading-tight tracking-tighter @[480px]:text-6xl">Meme Alchemist</h1>
+<h2 class="text-lg font-normal leading-normal text-gray-300 @[480px]:text-xl">AI-Powered Meme Generator · Trending Topics + Facts = Engaging Content</h2>
+</div>
+<div class="flex justify-center">
+<button class="gradient-button flex min-h-[56px] w-full max-w-xs cursor-pointer items-center justify-center gap-2 overflow-hidden rounded-xl px-6 py-4 text-base font-bold leading-normal text-white transition-all duration-300 hover:scale-105 active:scale-95 @[480px]:px-8 @[480px]:py-5 @[480px]:text-lg">
+<span class="material-symbols-outlined">auto_awesome</span>
+<span class="truncate">Create Your Meme</span>
+</button>
+</div>
+</div>
+</div>
+<div class="flex flex-col gap-6 px-4 py-8 @container">
+<div class="grid grid-cols-1 gap-4 @[640px]:grid-cols-3">
+<div class="flex flex-1 flex-col gap-2 rounded-xl border border-gray-800 bg-[#1a1a1a]/50 p-5 backdrop-blur-sm transition-transform hover:scale-[1.02] hover:border-primary/50">
+<div class="text-primary">
+<span class="material-symbols-outlined text-3xl">trending_up</span>
+</div>
+<div class="flex flex-col gap-1">
+<h2 class="text-lg font-bold leading-tight text-white">Real-Time Trends</h2>
+<p class="text-base font-normal leading-normal text-gray-400">Our AI scours the internet for the latest trending topics to keep your content fresh and relevant.</p>
+</div>
+</div>
+<div class="flex flex-1 flex-col gap-2 rounded-xl border border-gray-800 bg-[#1a1a1a]/50 p-5 backdrop-blur-sm transition-transform hover:scale-[1.02] hover:border-primary/50">
+<div class="text-primary">
+<span class="material-symbols-outlined text-3xl">bolt</span>
+</div>
+<div class="flex flex-col gap-1">
+<h2 class="text-lg font-bold leading-tight text-white">One-Click Generation</h2>
+<p class="text-base font-normal leading-normal text-gray-400">Generate engaging memes with a single click. No design skills required, just pure creativity.</p>
+</div>
+</div>
+<div class="flex flex-1 flex-col gap-2 rounded-xl border border-gray-800 bg-[#1a1a1a]/50 p-5 backdrop-blur-sm transition-transform hover:scale-[1.02] hover:border-primary/50">
+<div class="text-primary">
+<span class="material-symbols-outlined text-3xl">spark</span>
+</div>
+<div class="flex flex-col gap-1">
+<h2 class="text-lg font-bold leading-tight text-white">Verifiable Facts</h2>
+<p class="text-base font-normal leading-normal text-gray-400">Add a unique twist to your memes by incorporating interesting and verifiable facts automatically.</p>
+</div>
+</div>
+</div>
+</div>
+</main>
+<footer class="flex flex-col gap-6 px-5 py-6 text-center @container">
+<p class="text-sm font-normal leading-normal text-gray-500">Portfolio Project · MVP Version</p>
+</footer>
+</div>
+
+</body></html>

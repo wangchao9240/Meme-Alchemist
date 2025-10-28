@@ -1,6 +1,6 @@
 "use client"
 
-import { useState, useEffect } from "react"
+import { useState, useEffect, useRef } from "react"
 import { useRouter } from "next/navigation"
 import { ArrowLeft, Download, Sparkles, CloudOff, Loader2 } from "lucide-react"
 import { useComposerStore } from "@/lib/stores/composer"
@@ -12,8 +12,9 @@ type ViewerState = "loading" | "loaded" | "error"
 export default function MemeViewerPage() {
   const router = useRouter()
   const [state, setState] = useState<ViewerState>("loading")
-  const [memeUrl, setMemeUrl] = useState("")
+  const [memeUrls, setMemeUrls] = useState<string[]>([])
   const [errorMessage, setErrorMessage] = useState("")
+  const hasGeneratedRef = useRef(false)
 
   // Get data from store
   const topic = useComposerStore((state) => state.topic)
@@ -21,6 +22,12 @@ export default function MemeViewerPage() {
   const template = useComposerStore((state) => state.template)
 
   useEffect(() => {
+    // Prevent duplicate calls (React StrictMode in dev)
+    if (hasGeneratedRef.current) {
+      console.log("[MemeViewer] Already generated, skipping...")
+      return
+    }
+
     // Validate required data
     if (!topic || !facts || facts.length === 0 || !template) {
       console.error("[MemeViewer] Missing required data:", {
@@ -39,7 +46,8 @@ export default function MemeViewerPage() {
       return
     }
 
-    // Start generation
+    // Mark as generated and start generation
+    hasGeneratedRef.current = true
     generateMeme()
   }, [])
 
@@ -69,10 +77,14 @@ export default function MemeViewerPage() {
 
       if (result.images && result.images.length > 0) {
         setState("loaded")
-        setMemeUrl(result.images[0].url)
+        // Store all generated image URLs
+        setMemeUrls(result.images.map((img) => img.url))
         useToastStore
           .getState()
-          .showToast("Meme generated successfully!", "success")
+          .showToast(
+            `${result.images.length} meme image(s) generated successfully!`,
+            "success"
+          )
       } else {
         throw new Error("No images returned from API")
       }
@@ -91,25 +103,31 @@ export default function MemeViewerPage() {
   }
 
   function handleDownload() {
-    if (memeUrl) {
-      // Create a temporary link to download the image
-      const link = document.createElement("a")
-      link.href = memeUrl
-      link.download = `meme-${Date.now()}.png`
-      link.target = "_blank"
-      document.body.appendChild(link)
-      link.click()
-      document.body.removeChild(link)
+    if (memeUrls.length > 0) {
+      // Download all generated images
+      memeUrls.forEach((url, index) => {
+        const link = document.createElement("a")
+        link.href = url
+        link.download = `meme-${Date.now()}-${index + 1}.png`
+        link.target = "_blank"
+        document.body.appendChild(link)
+        link.click()
+        document.body.removeChild(link)
+      })
 
-      useToastStore.getState().showToast("Download started!", "success")
+      useToastStore
+        .getState()
+        .showToast(`${memeUrls.length} image(s) download started!`, "success")
     }
   }
 
   function handleGenerate() {
+    hasGeneratedRef.current = false
     generateMeme()
   }
 
   function handleRetry() {
+    hasGeneratedRef.current = false
     generateMeme()
   }
 
@@ -157,12 +175,17 @@ export default function MemeViewerPage() {
       {/* Loaded State */}
       {state === "loaded" && (
         <>
-          <div className="flex w-full grow py-3 px-4">
-            <div className="w-full gap-1 overflow-hidden aspect-[2/3] flex">
-              <div
-                className="w-full bg-center bg-no-repeat bg-cover aspect-auto rounded-xl flex-1"
-                style={{ backgroundImage: `url("${memeUrl}")` }}
-              />
+          <div className="flex w-full grow py-3 px-4 overflow-y-auto">
+            <div className="w-full flex flex-col gap-4">
+              {memeUrls.map((url, index) => (
+                <div key={index} className="w-full">
+                  <img
+                    src={url}
+                    alt={`Generated Meme ${index + 1}`}
+                    className="w-full h-auto object-contain rounded-xl"
+                  />
+                </div>
+              ))}
             </div>
           </div>
 
@@ -192,10 +215,7 @@ export default function MemeViewerPage() {
       {state === "error" && (
         <div className="flex-1 flex flex-col justify-center px-4 py-6">
           <div className="relative w-full max-w-[480px] mx-auto aspect-[2/3]">
-            <div
-              className="w-full h-full bg-center bg-no-repeat bg-cover rounded-lg"
-              style={{ backgroundImage: `url("${memeUrl}")` }}
-            />
+            <div className="w-full h-full bg-[#191022] rounded-lg"></div>
             <div className="absolute inset-0 bg-black/60 rounded-lg flex flex-col items-center justify-center gap-4 p-4">
               <div className="flex flex-col items-center gap-2">
                 <CloudOff className="text-red-500 w-16 h-16" />

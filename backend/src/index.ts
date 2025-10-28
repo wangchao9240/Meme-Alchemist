@@ -15,6 +15,9 @@ export interface Env {
   // KV (optional in local dev)
   CACHE?: KVNamespace
 
+  // Workers AI
+  AI?: any
+
   // Secrets (optional in local dev)
   SUPABASE_URL?: string
   SUPABASE_SERVICE_KEY?: string

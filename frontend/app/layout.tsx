@@ -34,11 +34,14 @@ export default function RootLayout({
   children: React.ReactNode
 }) {
   return (
-    <html lang="zh-CN" className={notoSansSC.variable}>
+    <html lang="zh-CN" className={notoSansSC.variable} suppressHydrationWarning>
       <head>
         <link rel="preconnect" href={process.env.NEXT_PUBLIC_API_URL} />
       </head>
-      <body className="min-h-screen bg-background font-sans antialiased">
+      <body
+        className="min-h-screen bg-background font-sans antialiased"
+        suppressHydrationWarning
+      >
         <ErrorBoundary>
           {children}
           <Toast />

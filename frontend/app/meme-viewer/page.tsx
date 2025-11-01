@@ -2,7 +2,7 @@
 
 import { useState, useEffect, useRef } from "react"
 import { useRouter } from "next/navigation"
-import { ArrowLeft, Download, Sparkles, CloudOff, Loader2 } from "lucide-react"
+import { ArrowLeft, Download, CloudOff, Loader2 } from "lucide-react"
 import { useComposerStore } from "@/lib/stores/composer"
 import { composeAndRender } from "@/lib/api-client"
 import { useToastStore } from "@/lib/stores/toast"
@@ -102,28 +102,98 @@ export default function MemeViewerPage() {
     router.back()
   }
 
-  function handleDownload() {
-    if (memeUrls.length > 0) {
-      // Download all generated images
-      memeUrls.forEach((url, index) => {
+  async function handleDownload() {
+    if (memeUrls.length === 0) return
+
+    try {
+      // If only one image, download directly
+      if (memeUrls.length === 1) {
         const link = document.createElement("a")
-        link.href = url
-        link.download = `meme-${Date.now()}-${index + 1}.png`
-        link.target = "_blank"
-        document.body.appendChild(link)
+        link.href = memeUrls[0]
+        link.download = `meme-${Date.now()}.png`
         link.click()
-        document.body.removeChild(link)
+        useToastStore.getState().showToast("Image downloaded!", "success")
+        return
+      }
+
+      // Multiple images: merge and download
+      console.log(`[Download] Loading ${memeUrls.length} images...`)
+
+      const imagePromises = memeUrls.map((url, index) => {
+        return new Promise<{ url: string; img: HTMLImageElement }>(
+          (resolve, reject) => {
+            const image = new Image()
+            image.crossOrigin = "anonymous"
+            image.onload = () => {
+              console.log(`[Download] Loaded image ${index + 1}`)
+              resolve({ url, img: image })
+            }
+            image.onerror = (e) => {
+              console.error(`[Download] Failed to load image ${index + 1}:`, e)
+              reject(new Error(`Failed to load image: ${url}`))
+            }
+            image.src = url
+          }
+        )
       })
 
+      const loadedImages = await Promise.all(imagePromises)
+      console.log(`[Download] All ${loadedImages.length} images loaded`)
+
+      // Calculate canvas dimensions for horizontal layout
+      const padding = 10
+      const totalWidth =
+        loadedImages.reduce((sum, { img }) => sum + img.width, 0) +
+        padding * (loadedImages.length - 1)
+      const maxHeight = Math.max(...loadedImages.map(({ img }) => img.height))
+
+      console.log(`[Download] Canvas size: ${totalWidth}x${maxHeight}`)
+
+      // Create canvas
+      const canvas = document.createElement("canvas")
+      canvas.width = totalWidth
+      canvas.height = maxHeight
+      const ctx = canvas.getContext("2d")
+
+      if (!ctx) {
+        throw new Error("Failed to get canvas context")
+      }
+
+      // Draw images side by side (horizontal layout)
+      let currentX = 0
+      loadedImages.forEach(({ img }, index) => {
+        console.log(`[Download] Drawing image ${index + 1} at x=${currentX}`)
+        ctx.drawImage(img, currentX, 0, img.width, img.height)
+        currentX += img.width + padding
+      })
+
+      console.log("[Download] Images merged, converting to blob...")
+
+      // Convert to blob and download
+      canvas.toBlob((blob) => {
+        if (!blob) {
+          console.error("[Download] Failed to create blob")
+          useToastStore.getState().showToast("Download failed", "error")
+          return
+        }
+        const url = URL.createObjectURL(blob)
+        const link = document.createElement("a")
+        link.href = url
+        link.download = `meme-merged-${Date.now()}.png`
+        link.click()
+        URL.revokeObjectURL(url)
+
+        useToastStore
+          .getState()
+          .showToast("Merged image downloaded!", "success")
+        console.log("[Download] Download successful")
+      }, "image/png")
+    } catch (error) {
+      console.error("Download failed:", error)
       useToastStore
         .getState()
-        .showToast(`${memeUrls.length} image(s) download started!`, "success")
+        .showToast("Download failed. Please try again.", "error")
     }
-  }
-
-  function handleGenerate() {
-    hasGeneratedRef.current = false
-    generateMeme()
   }
 
   function handleRetry() {
@@ -176,31 +246,40 @@ export default function MemeViewerPage() {
       {state === "loaded" && (
         <>
           <div className="flex w-full grow py-3 px-4 overflow-y-auto">
-            <div className="w-full flex flex-col gap-4">
-              {memeUrls.map((url, index) => (
-                <div key={index} className="w-full">
-                  <img
-                    src={url}
-                    alt={`Generated Meme ${index + 1}`}
-                    className="w-full h-auto object-contain rounded-xl"
-                  />
-                </div>
-              ))}
-            </div>
+            {memeUrls.length > 1 ? (
+              // Multiple images: display horizontally, fit width, centered
+              <div className="w-full flex gap-2 items-center justify-center">
+                {memeUrls.map((url, index) => (
+                  <div key={index} className="flex-1 min-w-0">
+                    <img
+                      src={url}
+                      alt={`Generated Meme Panel ${index + 1}`}
+                      className="w-full h-auto object-contain rounded-xl"
+                    />
+                  </div>
+                ))}
+              </div>
+            ) : (
+              // Single image: display normally
+              <div className="w-full flex flex-col gap-4 items-center">
+                {memeUrls.map((url, index) => (
+                  <div key={index} className="w-full">
+                    <img
+                      src={url}
+                      alt={`Generated Meme ${index + 1}`}
+                      className="w-full h-auto object-contain rounded-xl"
+                    />
+                  </div>
+                ))}
+              </div>
+            )}
           </div>
 
-          <div className="flex justify-stretch sticky bottom-0 bg-[#191022] pt-2">
-            <div className="flex flex-1 gap-3 max-w-[480px] items-stretch px-4 py-3">
-              <button
-                onClick={handleGenerate}
-                className="flex min-w-[84px] max-w-[480px] cursor-pointer items-center justify-center overflow-hidden rounded-lg h-12 px-5 bg-transparent text-white text-base font-bold leading-normal tracking-[0.015em] w-full border border-white/20 gap-2 touch-manipulation"
-              >
-                <Sparkles size={20} />
-                <span className="truncate">Generate</span>
-              </button>
+          <div className="flex justify-center sticky bottom-0 bg-[#191022] pt-2">
+            <div className="w-full max-w-[480px] px-4 py-3">
               <button
                 onClick={handleDownload}
-                className="flex min-w-[84px] max-w-[480px] cursor-pointer items-center justify-center overflow-hidden rounded-lg h-12 px-5 text-white text-base font-bold leading-normal tracking-[0.015em] w-full gap-2 touch-manipulation"
+                className="flex w-full cursor-pointer items-center justify-center overflow-hidden rounded-lg h-12 px-5 text-white text-base font-bold leading-normal tracking-[0.015em] gap-2 touch-manipulation"
                 style={{ backgroundColor: "#a658f3" }}
               >
                 <Download size={20} />
